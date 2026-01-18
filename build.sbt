@@ -75,7 +75,6 @@ lazy val root = project
     examples
   )
 
-
 lazy val typeid = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(stdSettings("zio-blocks-typeid"))
@@ -102,6 +101,7 @@ lazy val schema = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(crossProjectSettings)
   .settings(buildInfoSettings("zio.blocks.schema"))
   .enablePlugins(BuildInfoPlugin)
+  .settings(Test / scalacOptions -= "-Xfatal-warnings")
   .jvmSettings(mimaSettings(failOnProblem = false))
   .jsSettings(jsSettings)
   .nativeSettings(nativeSettings)
@@ -251,6 +251,7 @@ lazy val `schema-toon` = crossProject(JSPlatform, JVMPlatform, NativePlatform)
 lazy val scalaNextTests = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(stdSettings("zio-blocks-scala-next-tests", Seq("3.7.4")))
+  .settings(Test / scalacOptions -= "-Xfatal-warnings")
   .dependsOn(schema % "compile->compile;test->test")
   .settings(crossProjectSettings)
   .settings(
