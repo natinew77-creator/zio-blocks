@@ -11,8 +11,6 @@ import zio.blocks.schema.binding._
 import zio.blocks.schema.binding.RegisterOffset._
 import zio.blocks.schema.CommonMacroOps
 
-
-
 trait SchemaCompanionVersionSpecific {
   inline def derived[A]: Schema[A] = ${ SchemaCompanionVersionSpecificImpl.derived }
 }
@@ -860,7 +858,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           val typeInfo =
             if (isGenericTuple(tTpe)) new GenericTupleInfo[tt](tTpe)
             else new ClassInfo[tt](tTpe)
-          val fields = typeInfo.fields[T](nameOverrides)
+          val fields   = typeInfo.fields[T](nameOverrides)
           val argsExpr = Expr.ofList(tpe.typeArgs.map { arg =>
             val argNorm = if (isGenericTuple(arg)) normalizeGenericTuple(arg) else arg
             argNorm.asType match {
@@ -869,15 +867,17 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
             }
           })
           val tpeId = '{
-            zio.blocks.typeid.TypeId(
-              zio.blocks.typeid.Owner.parse("scala"),
-              "NamedTuple",
-              Nil,
-              zio.blocks.typeid.TypeDefKind.Class(),
-              Nil,
-              $argsExpr,
-              Nil
-            ).asInstanceOf[TypeId[T]]
+            zio.blocks.typeid
+              .TypeId(
+                zio.blocks.typeid.Owner.parse("scala"),
+                "NamedTuple",
+                Nil,
+                zio.blocks.typeid.TypeDefKind.Class(),
+                Nil,
+                $argsExpr,
+                Nil
+              )
+              .asInstanceOf[TypeId[T]]
           }
           '{
             new Schema(

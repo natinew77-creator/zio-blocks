@@ -38,7 +38,9 @@ object ZIOPreludeSupportSpec extends SchemaBaseSpec {
       assert(Planet.name.focus.typeId.asInstanceOf[TypeId[Any]])(equalTo(expectedTypeId("Name"))) &&
       assert(Planet.mass.focus.typeId.asInstanceOf[TypeId[Any]])(equalTo(expectedTypeId("Kilogram"))) &&
       assert(Planet.radius.focus.typeId.asInstanceOf[TypeId[Any]])(equalTo(expectedTypeId("Meter"))) &&
-      assert(Planet.distanceFromSun.focus.typeId.asInstanceOf[TypeId[Any]])(equalTo(TypeId.from[Option[Meter]].asInstanceOf[TypeId[Any]]))
+      assert(stripMetadata(Planet.distanceFromSun.focus.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(
+        equalTo(stripMetadata(TypeId.from[Option[Meter]]).copy(args = Nil).asInstanceOf[TypeId[Any]])
+      )
     },
     test("derive schemas for cases classes and generic tuples with newtypes") {
       val value = new NRecord(

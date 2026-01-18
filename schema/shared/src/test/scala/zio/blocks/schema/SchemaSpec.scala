@@ -409,7 +409,7 @@ object SchemaSpec extends SchemaBaseSpec {
         assert(Tuple4._4.replace(value, 5L))(equalTo((1: Byte, 2: Short, 3, 5L))) &&
         assert(Tuple4.schema.fromDynamicValue(Tuple4.schema.toDynamicValue(value)))(isRight(equalTo(value))) &&
         assert(stripMetadata(Tuple4.schema.reflect.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(
-          equalTo(unsafeTypeId("scala.Tuple4"))
+          equalTo(unsafeTypeId("scala.Tuple4").asInstanceOf[TypeId[Any]])
         ) &&
         assert(Tuple4.schema.reflect.asRecord.map(_.fields.map(_.name)))(
           isSome(equalTo(Vector("_1", "_2", "_3", "_4")))
