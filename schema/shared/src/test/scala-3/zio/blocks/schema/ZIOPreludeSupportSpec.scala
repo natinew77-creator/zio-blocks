@@ -7,17 +7,15 @@ import zio.test._
 import zio.test.Assertion._
 
 object ZIOPreludeSupportSpec extends SchemaBaseSpec {
-  
+
   import zio.blocks.typeid.TypeId
-  
+
   private def unsafeTypeId[A](s: String): TypeId[A] =
     TypeId.parse(s).fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[A]])
 
   case class Namespace(parts: Seq[String], sub: Seq[String] = Nil) {
-     def toDotted: String = (parts ++ sub).mkString(".")
+    def toDotted: String = (parts ++ sub).mkString(".")
   }
-  
-
 
   def spec: Spec[TestEnvironment, Any] = suite("ZIOPreludeSupportSpec")(
     test("derive schemas for cases classes with subtype and newtype fields") {
@@ -36,17 +34,38 @@ object ZIOPreludeSupportSpec extends SchemaBaseSpec {
       assert(Planet.schema.fromDynamicValue(Planet.schema.toDynamicValue(value)))(isRight(equalTo(value))) &&
       assert(stripMetadata(Planet.name.focus.typeId).copy(args = Nil))(
         equalTo(
-          TypeId(Owner(List(Owner.Package("zio"), Owner.Package("prelude"), Owner.Type("NewtypeCustom"))), "Type", Nil, TypeDefKind.Class(), Nil, Nil)
+          TypeId(
+            Owner(List(Owner.Package("zio"), Owner.Package("prelude"), Owner.Type("NewtypeCustom"))),
+            "Type",
+            Nil,
+            TypeDefKind.Class(),
+            Nil,
+            Nil
+          )
         )
       ) &&
       assert(stripMetadata(Planet.mass.focus.typeId).copy(args = Nil))(
         equalTo(
-          TypeId(Owner(List(Owner.Package("zio"), Owner.Package("prelude"), Owner.Type("NewtypeCustom"))), "Type", Nil, TypeDefKind.Class(), Nil, Nil)
+          TypeId(
+            Owner(List(Owner.Package("zio"), Owner.Package("prelude"), Owner.Type("NewtypeCustom"))),
+            "Type",
+            Nil,
+            TypeDefKind.Class(),
+            Nil,
+            Nil
+          )
         )
       ) &&
       assert(stripMetadata(Planet.radius.focus.typeId).copy(args = Nil))(
         equalTo(
-          TypeId(Owner(List(Owner.Package("zio"), Owner.Package("prelude"), Owner.Type("Subtype"))), "Type", Nil, TypeDefKind.Class(), Nil, Nil)
+          TypeId(
+            Owner(List(Owner.Package("zio"), Owner.Package("prelude"), Owner.Type("Subtype"))),
+            "Type",
+            Nil,
+            TypeDefKind.Class(),
+            Nil,
+            Nil
+          )
         )
       ) &&
       assert(stripMetadata(Planet.distanceFromSun.focus.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(

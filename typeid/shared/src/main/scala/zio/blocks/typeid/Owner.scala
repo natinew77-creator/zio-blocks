@@ -24,20 +24,19 @@ object Owner {
   }
 
   final case class Package(name: String) extends Segment
-  final case class Term(name: String) extends Segment
-  final case class Type(name: String) extends Segment
-  final case class Local(index: Int) extends Segment {
+  final case class Term(name: String)    extends Segment
+  final case class Type(name: String)    extends Segment
+  final case class Local(index: Int)     extends Segment {
     def name: String = s"<local$index>"
   }
 
   val Root: Owner = Owner(Nil)
 
-  def pkg(name: String): Owner = Owner(List(Package(name)))
+  def pkg(name: String): Owner    = Owner(List(Package(name)))
   def pkgs(names: String*): Owner = Owner(names.map(Package(_)).toList)
-  
+
   // Helper for tests/macros
-  def parse(s: String): Owner = {
+  def parse(s: String): Owner =
     if (s.isEmpty) Root
     else Owner(s.split('.').map(Package(_)).toList)
-  }
 }

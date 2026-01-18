@@ -1223,13 +1223,13 @@ object AvroFormat
                 else null
               var offset = 0L
               if (codecsWithAvroSchema eq null) {
-                val fullName = typeId.show
+                val fullName     = typeId.show
                 val lastDotIndex = fullName.lastIndexOf('.')
-                val namespace = if (lastDotIndex >= 0) fullName.substring(0, lastDotIndex) else ""
-                val name = if (lastDotIndex >= 0) fullName.substring(lastDotIndex + 1) else fullName
-                val avroSchema = createAvroRecord(namespace, name)
-                val len        = fields.length
-                val codecs     = new Array[AvroBinaryCodec[?]](len)
+                val namespace    = if (lastDotIndex >= 0) fullName.substring(0, lastDotIndex) else ""
+                val name         = if (lastDotIndex >= 0) fullName.substring(lastDotIndex + 1) else fullName
+                val avroSchema   = createAvroRecord(namespace, name)
+                val len          = fields.length
+                val codecs       = new Array[AvroBinaryCodec[?]](len)
                 codecsWithAvroSchema = (codecs, avroSchema)
                 if (isRecursive) recursiveRecordCache.get.put(typeId, codecsWithAvroSchema)
                 val avroSchemaFields = new java.util.ArrayList[AvroSchema.Field](len)
@@ -1331,16 +1331,16 @@ object AvroFormat
               val binding = wrapper.wrapperBinding.asInstanceOf[Binding.Wrapper[A, Wrapped]]
               val codec   = deriveCodec(wrapper.wrapped).asInstanceOf[AvroBinaryCodec[Wrapped]]
               new AvroBinaryCodec[A](wrapper.wrapperPrimitiveType.fold(AvroBinaryCodec.objectType) {
-                case _: PrimitiveType.Boolean   => AvroBinaryCodec.booleanType
-                case _: PrimitiveType.Byte      => AvroBinaryCodec.byteType
-                case _: PrimitiveType.Char      => AvroBinaryCodec.charType
-                case _: PrimitiveType.Short     => AvroBinaryCodec.shortType
-                case _: PrimitiveType.Float     => AvroBinaryCodec.floatType
-                case _: PrimitiveType.Int       => AvroBinaryCodec.intType
-                case _: PrimitiveType.Double    => AvroBinaryCodec.doubleType
-                case _: PrimitiveType.Long      => AvroBinaryCodec.longType
-                case _: PrimitiveType.Unit      => AvroBinaryCodec.unitType
-                case _                          => AvroBinaryCodec.objectType
+                case _: PrimitiveType.Boolean => AvroBinaryCodec.booleanType
+                case _: PrimitiveType.Byte    => AvroBinaryCodec.byteType
+                case _: PrimitiveType.Char    => AvroBinaryCodec.charType
+                case _: PrimitiveType.Short   => AvroBinaryCodec.shortType
+                case _: PrimitiveType.Float   => AvroBinaryCodec.floatType
+                case _: PrimitiveType.Int     => AvroBinaryCodec.intType
+                case _: PrimitiveType.Double  => AvroBinaryCodec.doubleType
+                case _: PrimitiveType.Long    => AvroBinaryCodec.longType
+                case _: PrimitiveType.Unit    => AvroBinaryCodec.unitType
+                case _                        => AvroBinaryCodec.objectType
               }) {
                 private[this] val unwrap       = binding.unwrap
                 private[this] val wrap         = binding.wrap

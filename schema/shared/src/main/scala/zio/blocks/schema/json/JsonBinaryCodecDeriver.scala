@@ -346,7 +346,19 @@ class JsonBinaryCodecDeriver private[json] (
     doc: Doc,
     modifiers: Seq[Modifier.Reflect]
   )(implicit F: HasBinding[F], D: HasInstance[F]): Lazy[JsonBinaryCodec[DynamicValue]] =
-    Lazy(deriveCodec(new Reflect.Dynamic(binding, zio.blocks.typeid.TypeId.parse("zio.blocks.schema.DynamicValue").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[zio.blocks.typeid.TypeId[DynamicValue]], doc, modifiers)))
+    Lazy(
+      deriveCodec(
+        new Reflect.Dynamic(
+          binding,
+          zio.blocks.typeid.TypeId
+            .parse("zio.blocks.schema.DynamicValue")
+            .getOrElse(throw new RuntimeException("Parse failed"))
+            .asInstanceOf[zio.blocks.typeid.TypeId[DynamicValue]],
+          doc,
+          modifiers
+        )
+      )
+    )
 
   def deriveWrapper[F[_, _], A, B](
     wrapped: Reflect[F, B],
@@ -1852,16 +1864,16 @@ class JsonBinaryCodecDeriver private[json] (
         val binding = wrapper.wrapperBinding.asInstanceOf[Binding.Wrapper[A, Wrapped]]
         val codec   = deriveCodec(wrapper.wrapped).asInstanceOf[JsonBinaryCodec[Wrapped]]
         new JsonBinaryCodec[A](wrapper.wrapperPrimitiveType.fold(JsonBinaryCodec.objectType) {
-          case _: PrimitiveType.Boolean   => JsonBinaryCodec.booleanType
-          case _: PrimitiveType.Byte      => JsonBinaryCodec.byteType
-          case _: PrimitiveType.Char      => JsonBinaryCodec.charType
-          case _: PrimitiveType.Short     => JsonBinaryCodec.shortType
-          case _: PrimitiveType.Float     => JsonBinaryCodec.floatType
-          case _: PrimitiveType.Int       => JsonBinaryCodec.intType
-          case _: PrimitiveType.Double    => JsonBinaryCodec.doubleType
-          case _: PrimitiveType.Long      => JsonBinaryCodec.longType
-          case _: PrimitiveType.Unit      => JsonBinaryCodec.unitType
-          case _                          => JsonBinaryCodec.objectType
+          case _: PrimitiveType.Boolean => JsonBinaryCodec.booleanType
+          case _: PrimitiveType.Byte    => JsonBinaryCodec.byteType
+          case _: PrimitiveType.Char    => JsonBinaryCodec.charType
+          case _: PrimitiveType.Short   => JsonBinaryCodec.shortType
+          case _: PrimitiveType.Float   => JsonBinaryCodec.floatType
+          case _: PrimitiveType.Int     => JsonBinaryCodec.intType
+          case _: PrimitiveType.Double  => JsonBinaryCodec.doubleType
+          case _: PrimitiveType.Long    => JsonBinaryCodec.longType
+          case _: PrimitiveType.Unit    => JsonBinaryCodec.unitType
+          case _                        => JsonBinaryCodec.objectType
         }) {
           private[this] val unwrap       = binding.unwrap
           private[this] val wrap         = binding.wrap
@@ -1921,8 +1933,8 @@ class JsonBinaryCodecDeriver private[json] (
     }
 
   private[this] def option[F[_, _], A](variant: Reflect.Variant[F, A]): Option[Reflect[F, ?]] = {
-    val typeId   = variant.typeId
-    val cases    = variant.cases
+    val typeId = variant.typeId
+    val cases  = variant.cases
     if (
       typeId.owner == zio.blocks.typeid.Owner.parse("scala") && typeId.name == "Option" &&
       cases.length == 2 && cases(1).name == "Some"
@@ -1932,9 +1944,9 @@ class JsonBinaryCodecDeriver private[json] (
 
   private[this] def isOptional[F[_, _], A](reflect: Reflect[F, A]): Boolean =
     !requireOptionFields && reflect.isVariant && {
-      val variant  = reflect.asVariant.get
-      val typeId   = reflect.typeId
-      val cases    = variant.cases
+      val variant = reflect.asVariant.get
+      val typeId  = reflect.typeId
+      val cases   = variant.cases
       typeId.owner == zio.blocks.typeid.Owner.parse("scala") && typeId.name == "Option" &&
       cases.length == 2 && cases(1).name == "Some"
     }

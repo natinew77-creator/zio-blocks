@@ -2,7 +2,7 @@ package zio.blocks.typeid
 
 sealed trait Kind {
   def arity: Int
-  def isProperType: Boolean = this == Kind.Type
+  def isProperType: Boolean   = this == Kind.Type
   def isHigherKinded: Boolean = !isProperType
 }
 
@@ -15,8 +15,8 @@ object Kind {
     def arity: Int = params.size
   }
 
-  val `* -> *`: Kind = Arrow(List(Type), Type)
-  val `* -> * -> *`: Kind = Arrow(List(Type, Type), Type)
+  val `* -> *`: Kind        = Arrow(List(Type), Type)
+  val `* -> * -> *`: Kind   = Arrow(List(Type, Type), Type)
   val `(* -> *) -> *`: Kind = Arrow(List(`* -> *`), Type)
 
   def arity(n: Int): Kind =

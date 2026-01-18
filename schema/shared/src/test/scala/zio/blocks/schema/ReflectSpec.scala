@@ -15,40 +15,44 @@ object ReflectSpec extends SchemaBaseSpec {
     TypeId.parse(s).fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[A]])
 
   case class TestNamespace(parts: Seq[String], sub: Seq[String] = Nil) {
-     def toDotted: String = (parts ++ sub).mkString(".")
+    def toDotted: String = (parts ++ sub).mkString(".")
   }
   object TestNamespace {
-    val scala = TestNamespace(Seq("scala"))
+    val scala                    = TestNamespace(Seq("scala"))
     val scalaCollectionImmutable = TestNamespace(Seq("scala", "collection", "immutable"))
   }
 
   object TestTypeId {
-     def apply[A](namespace: TestNamespace, name: String, @annotation.unused params: Any*): TypeId[A] =
-       unsafeTypeId(s"${namespace.toDotted}.$name")
+    def apply[A](namespace: TestNamespace, name: String, @annotation.unused params: Any*): TypeId[A] =
+      unsafeTypeId(s"${namespace.toDotted}.$name")
 
-     val int = StandardTypes.int
-     val long = StandardTypes.long
-     val string = StandardTypes.string
-     val boolean = StandardTypes.boolean
-     val byte = StandardTypes.byte
-     val short = StandardTypes.short
-     val double = StandardTypes.double
-     val float = StandardTypes.float
-     val char = StandardTypes.char
-     val unit = StandardTypes.unit
-     
-     // Special types used in ReflectSpec
-     val dynamicValue = TypeId.parse("zio.blocks.schema.DynamicValue").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Any]])
-     val year = unsafeTypeId("java.time.Year")
-     val yearMonth = unsafeTypeId("java.time.YearMonth")
-     
-     def list[A](@annotation.unused e: Any): TypeId[List[A]] = unsafeTypeId("scala.collection.immutable.List")
-     def vector[A](@annotation.unused e: Any): TypeId[Vector[A]] = unsafeTypeId("scala.collection.immutable.Vector")
-     def map[K, V](@annotation.unused k: Any, @annotation.unused v: Any): TypeId[Map[K, V]] = unsafeTypeId("scala.collection.immutable.Map")
-     def set[A](@annotation.unused e: Any): TypeId[Set[A]] = unsafeTypeId("scala.collection.immutable.Set")
-     def seq[A](@annotation.unused e: Any): TypeId[Seq[A]] = unsafeTypeId("scala.collection.immutable.Seq")
-     def chunk[A](@annotation.unused e: Any): TypeId[zio.Chunk[A]] = unsafeTypeId("zio.Chunk")
-     def option[A](@annotation.unused e: Any): TypeId[Option[A]] = unsafeTypeId("scala.Option")
+    val int     = StandardTypes.int
+    val long    = StandardTypes.long
+    val string  = StandardTypes.string
+    val boolean = StandardTypes.boolean
+    val byte    = StandardTypes.byte
+    val short   = StandardTypes.short
+    val double  = StandardTypes.double
+    val float   = StandardTypes.float
+    val char    = StandardTypes.char
+    val unit    = StandardTypes.unit
+
+    // Special types used in ReflectSpec
+    val dynamicValue = TypeId
+      .parse("zio.blocks.schema.DynamicValue")
+      .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Any]])
+    val year      = unsafeTypeId("java.time.Year")
+    val yearMonth = unsafeTypeId("java.time.YearMonth")
+
+    def list[A](@annotation.unused e: Any): TypeId[List[A]]                                = unsafeTypeId("scala.collection.immutable.List")
+    def vector[A](@annotation.unused e: Any): TypeId[Vector[A]]                            = unsafeTypeId("scala.collection.immutable.Vector")
+    def map[K, V](@annotation.unused k: Any, @annotation.unused v: Any): TypeId[Map[K, V]] = unsafeTypeId(
+      "scala.collection.immutable.Map"
+    )
+    def set[A](@annotation.unused e: Any): TypeId[Set[A]]         = unsafeTypeId("scala.collection.immutable.Set")
+    def seq[A](@annotation.unused e: Any): TypeId[Seq[A]]         = unsafeTypeId("scala.collection.immutable.Seq")
+    def chunk[A](@annotation.unused e: Any): TypeId[zio.Chunk[A]] = unsafeTypeId("zio.Chunk")
+    def option[A](@annotation.unused e: Any): TypeId[Option[A]]   = unsafeTypeId("scala.Option")
   }
 
   def spec: Spec[TestEnvironment, Any] = suite("ReflectSpec")(
@@ -222,12 +226,20 @@ object ReflectSpec extends SchemaBaseSpec {
       },
       test("gets and updates primitive type name") {
         val int1 = Reflect.int[Binding]
-        assert(stripMetadata(int1.typeId).asInstanceOf[TypeId[Any]])(equalTo(TestTypeId.int.asInstanceOf[TypeId[Any]])) &&
+        assert(stripMetadata(int1.typeId).asInstanceOf[TypeId[Any]])(
+          equalTo(TestTypeId.int.asInstanceOf[TypeId[Any]])
+        ) &&
         assert(
           int1
             .typeId(TestTypeId(TestNamespace(List("zio", "blocks", "schema"), List("ReflectSpec")), "IntWrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
-        )(equalTo(TestTypeId[Int](TestNamespace(List("zio", "blocks", "schema"), List("ReflectSpec")), "IntWrapper").asInstanceOf[TypeId[Any]]))
+            .typeId
+            .asInstanceOf[TypeId[Any]]
+        )(
+          equalTo(
+            TestTypeId[Int](TestNamespace(List("zio", "blocks", "schema"), List("ReflectSpec")), "IntWrapper")
+              .asInstanceOf[TypeId[Any]]
+          )
+        )
       },
       test("updates primitive default value") {
         val int1 = Reflect.int[Binding]
@@ -320,7 +332,8 @@ object ReflectSpec extends SchemaBaseSpec {
         assert(
           tuple4Reflect
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "Tuple4Wrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
+            .typeId
+            .asInstanceOf[TypeId[Any]]
         )(
           equalTo(
             TestTypeId[(Byte, Short, Int, Long)](
@@ -408,17 +421,25 @@ object ReflectSpec extends SchemaBaseSpec {
       test("gets and updates variant type name") {
         assert(stripMetadata(eitherReflect.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(
           equalTo(
-            TestTypeId[Either[Int, Long]](TestNamespace(Seq("scala", "util")), "Either", Seq(TestTypeId.int, TestTypeId.long))
+            TestTypeId[Either[Int, Long]](
+              TestNamespace(Seq("scala", "util")),
+              "Either",
+              Seq(TestTypeId.int, TestTypeId.long)
+            )
               .asInstanceOf[TypeId[Any]]
           )
         ) &&
         assert(
           eitherReflect
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "EitherWrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
+            .typeId
+            .asInstanceOf[TypeId[Any]]
         )(
           equalTo(
-            TestTypeId[Either[Int, Long]](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "EitherWrapper")
+            TestTypeId[Either[Int, Long]](
+              TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")),
+              "EitherWrapper"
+            )
               .asInstanceOf[TypeId[Any]]
           )
         )
@@ -522,12 +543,16 @@ object ReflectSpec extends SchemaBaseSpec {
       test("gets and updates sequence type name") {
         val sequence1 = Reflect.vector(Reflect.int[Binding])
         assert(stripMetadata(sequence1.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(
-          equalTo(TestTypeId[Vector[Int]](TestNamespace.scalaCollectionImmutable, "Vector", Seq(TestTypeId.int)).asInstanceOf[TypeId[Any]])
+          equalTo(
+            TestTypeId[Vector[Int]](TestNamespace.scalaCollectionImmutable, "Vector", Seq(TestTypeId.int))
+              .asInstanceOf[TypeId[Any]]
+          )
         ) &&
         assert(
           sequence1
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "VectorWrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
+            .typeId
+            .asInstanceOf[TypeId[Any]]
         )(
           equalTo(
             TestTypeId[Vector[Int]](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "VectorWrapper")
@@ -615,12 +640,19 @@ object ReflectSpec extends SchemaBaseSpec {
       test("gets and updates map type name") {
         val map1 = Reflect.map(Reflect.int[Binding], Reflect.long[Binding])
         assert(stripMetadata(map1.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(
-          equalTo(TestTypeId[Map[Int, Long]](TestNamespace.scalaCollectionImmutable, "Map", Seq(TestTypeId.int, TestTypeId.long)).asInstanceOf[TypeId[Any]])
+          equalTo(
+            TestTypeId[Map[Int, Long]](
+              TestNamespace.scalaCollectionImmutable,
+              "Map",
+              Seq(TestTypeId.int, TestTypeId.long)
+            ).asInstanceOf[TypeId[Any]]
+          )
         ) &&
         assert(
           map1
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "MapWrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
+            .typeId
+            .asInstanceOf[TypeId[Any]]
         )(
           equalTo(
             TestTypeId[Map[Int, Long]](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "MapWrapper")
@@ -701,14 +733,20 @@ object ReflectSpec extends SchemaBaseSpec {
       },
       test("gets and updates dynamic type name") {
         val dynamic1 = Reflect.dynamic[Binding]
-        assert(stripMetadata(dynamic1.typeId).asInstanceOf[TypeId[Any]])(equalTo(TestTypeId.dynamicValue.asInstanceOf[TypeId[Any]])) &&
+        assert(stripMetadata(dynamic1.typeId).asInstanceOf[TypeId[Any]])(
+          equalTo(TestTypeId.dynamicValue.asInstanceOf[TypeId[Any]])
+        ) &&
         assert(
           dynamic1
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "DynamicWrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
+            .typeId
+            .asInstanceOf[TypeId[Any]]
         )(
           equalTo(
-            TestTypeId[DynamicValue](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "DynamicWrapper")
+            TestTypeId[DynamicValue](
+              TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")),
+              "DynamicWrapper"
+            )
               .asInstanceOf[TypeId[Any]]
           )
         )
@@ -772,13 +810,22 @@ object ReflectSpec extends SchemaBaseSpec {
       },
       test("gets and updates wrapper type name") {
         assert(stripMetadata(wrapperReflect.typeId).asInstanceOf[TypeId[Any]])(
-          equalTo(TestTypeId[Wrapper](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "Wrapper").asInstanceOf[TypeId[Any]])
+          equalTo(
+            TestTypeId[Wrapper](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "Wrapper")
+              .asInstanceOf[TypeId[Any]]
+          )
         ) &&
         assert(
           wrapperReflect
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "Wrapper2"))
-            .typeId.asInstanceOf[TypeId[Any]]
-        )(equalTo(TestTypeId[Wrapper](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "Wrapper2").asInstanceOf[TypeId[Any]]))
+            .typeId
+            .asInstanceOf[TypeId[Any]]
+        )(
+          equalTo(
+            TestTypeId[Wrapper](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "Wrapper2")
+              .asInstanceOf[TypeId[Any]]
+          )
+        )
       },
       test("gets and updates wrapper default value") {
         assert(wrapperReflect.getDefaultValue)(isNone) &&
@@ -832,12 +879,20 @@ object ReflectSpec extends SchemaBaseSpec {
       },
       test("gets and updates deferred type name") {
         val deferred1 = Reflect.Deferred[Binding, Year](() => Reflect.year)
-        assert(stripMetadata(deferred1.typeId).asInstanceOf[TypeId[Any]])(equalTo(TestTypeId.year.asInstanceOf[TypeId[Any]])) &&
+        assert(stripMetadata(deferred1.typeId).asInstanceOf[TypeId[Any]])(
+          equalTo(TestTypeId.year.asInstanceOf[TypeId[Any]])
+        ) &&
         assert(
           deferred1
             .typeId(TestTypeId(TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "YearWrapper"))
-            .typeId.asInstanceOf[TypeId[Any]]
-        )(equalTo(TestTypeId[Year](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "YearWrapper").asInstanceOf[TypeId[Any]]))
+            .typeId
+            .asInstanceOf[TypeId[Any]]
+        )(
+          equalTo(
+            TestTypeId[Year](TestNamespace(Seq("zio", "blocks", "schema"), Seq("ReflectSpec")), "YearWrapper")
+              .asInstanceOf[TypeId[Any]]
+          )
+        )
       },
       test("gets and updates deferred default value") {
         val deferred1 = Reflect.Deferred[Binding, YearMonth](() => Reflect.yearMonth)

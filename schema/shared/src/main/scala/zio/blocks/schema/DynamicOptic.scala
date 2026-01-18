@@ -91,7 +91,7 @@ object DynamicOptic {
 
     case object Wrapped extends Node
 
-  // Schema instances - manually written for Scala 2 compatibility
+    // Schema instances - manually written for Scala 2 compatibility
     // For easier testing in Scala 3, you can use schema.derive for all schemas.
     // example - `implicit lazy val dynamicOpticSchema: Schema[DynamicOptic] = Schema.derived`
 
@@ -99,7 +99,9 @@ object DynamicOptic {
     implicit lazy val elementsSchema: Schema[Elements.type] = new Schema(
       reflect = new Reflect.Record[Binding, Elements.type](
         fields = Vector.empty,
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.Elements").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Elements.type]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.Elements")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Elements.type]]),
         recordBinding = new Binding.Record(
           constructor = new ConstantConstructor[Elements.type](Elements),
           deconstructor = new ConstantDeconstructor[Elements.type]
@@ -111,7 +113,9 @@ object DynamicOptic {
     implicit lazy val mapKeysSchema: Schema[MapKeys.type] = new Schema(
       reflect = new Reflect.Record[Binding, MapKeys.type](
         fields = Vector.empty,
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.MapKeys").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[MapKeys.type]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.MapKeys")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[MapKeys.type]]),
         recordBinding = new Binding.Record(
           constructor = new ConstantConstructor[MapKeys.type](MapKeys),
           deconstructor = new ConstantDeconstructor[MapKeys.type]
@@ -123,7 +127,9 @@ object DynamicOptic {
     implicit lazy val mapValuesSchema: Schema[MapValues.type] = new Schema(
       reflect = new Reflect.Record[Binding, MapValues.type](
         fields = Vector.empty,
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.MapValues").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[MapValues.type]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.MapValues")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[MapValues.type]]),
         recordBinding = new Binding.Record(
           constructor = new ConstantConstructor[MapValues.type](MapValues),
           deconstructor = new ConstantDeconstructor[MapValues.type]
@@ -135,7 +141,9 @@ object DynamicOptic {
     implicit lazy val wrappedSchema: Schema[Wrapped.type] = new Schema(
       reflect = new Reflect.Record[Binding, Wrapped.type](
         fields = Vector.empty,
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.Wrapped").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Wrapped.type]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.Wrapped")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Wrapped.type]]),
         recordBinding = new Binding.Record(
           constructor = new ConstantConstructor[Wrapped.type](Wrapped),
           deconstructor = new ConstantDeconstructor[Wrapped.type]
@@ -150,7 +158,9 @@ object DynamicOptic {
         fields = Vector(
           Schema[String].reflect.asTerm("name")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.Field").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Field]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.Field")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Field]]),
         recordBinding = new Binding.Record(
           constructor = new Constructor[Field] {
             def usedRegisters: RegisterOffset                           = 1
@@ -172,7 +182,9 @@ object DynamicOptic {
         fields = Vector(
           Schema[String].reflect.asTerm("name")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.Case").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Case]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.Case")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Case]]),
         recordBinding = new Binding.Record(
           constructor = new Constructor[Case] {
             def usedRegisters: RegisterOffset                          = 1
@@ -194,7 +206,9 @@ object DynamicOptic {
         fields = Vector(
           Schema[Int].reflect.asTerm("index")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.AtIndex").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtIndex]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.AtIndex")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtIndex]]),
         recordBinding = new Binding.Record(
           constructor = new Constructor[AtIndex] {
             def usedRegisters: RegisterOffset                             = 1
@@ -216,7 +230,9 @@ object DynamicOptic {
         fields = Vector(
           Schema[DynamicValue].reflect.asTerm("key")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.AtMapKey").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtMapKey]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.AtMapKey")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtMapKey]]),
         recordBinding = new Binding.Record(
           constructor = new Constructor[AtMapKey] {
             def usedRegisters: RegisterOffset                              = 1
@@ -238,7 +254,9 @@ object DynamicOptic {
         fields = Vector(
           Schema[Seq[Int]].reflect.asTerm("index")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.IndicesSchema").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtIndices]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.IndicesSchema")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtIndices]]),
         recordBinding = new Binding.Record(
           constructor = new Constructor[AtIndices] {
             def usedRegisters: RegisterOffset                               = 1
@@ -260,7 +278,9 @@ object DynamicOptic {
         fields = Vector(
           Schema[Seq[DynamicValue]].reflect.asTerm("keys")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node.AtMapKeys").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtMapKeys]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node.AtMapKeys")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[AtMapKeys]]),
         recordBinding = new Binding.Record(
           constructor = new Constructor[AtMapKeys] {
             def usedRegisters: RegisterOffset                               = 1
@@ -292,7 +312,9 @@ object DynamicOptic {
           mapValuesSchema.reflect.asTerm("MapValues"),
           wrappedSchema.reflect.asTerm("Wrapped")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.DynamicOptic.Node").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Node]]),
+        typeId = TypeId
+          .parse("zio.blocks.schema.DynamicOptic.Node")
+          .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[Node]]),
         variantBinding = new Binding.Variant(
           discriminator = new Discriminator[Node] {
             def discriminate(a: Node): Int = a match {
@@ -383,7 +405,9 @@ object DynamicOptic {
       fields = Vector(
         Schema[IndexedSeq[Node]].reflect.asTerm("nodes")
       ),
-      typeId = TypeId.parse("zio.blocks.schema.DynamicOptic").fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[DynamicOptic]]),
+      typeId = TypeId
+        .parse("zio.blocks.schema.DynamicOptic")
+        .fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[DynamicOptic]]),
       recordBinding = new Binding.Record(
         constructor = new Constructor[DynamicOptic] {
           def usedRegisters: RegisterOffset                                  = 1

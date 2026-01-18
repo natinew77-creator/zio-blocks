@@ -7,10 +7,10 @@ final case class TypeParam(
   bounds: TypeBounds = TypeBounds.empty,
   kind: Kind = Kind.Type
 ) {
-  def isHigherKinded: Boolean = kind.isHigherKinded
-  def isCovariant: Boolean = variance == Variance.Covariant
+  def isHigherKinded: Boolean  = kind.isHigherKinded
+  def isCovariant: Boolean     = variance == Variance.Covariant
   def isContravariant: Boolean = variance == Variance.Contravariant
-  def isInvariant: Boolean = variance == Variance.Invariant
+  def isInvariant: Boolean     = variance == Variance.Invariant
 }
 
 object TypeParam {

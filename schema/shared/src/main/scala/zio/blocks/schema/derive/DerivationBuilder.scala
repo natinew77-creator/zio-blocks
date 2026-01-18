@@ -223,7 +223,13 @@ final case class DerivationBuilder[TC[_], A](
             doc: Doc,
             modifiers: Seq[Modifier.Reflect]
           ): Lazy[Reflect.Dynamic[G]] = Lazy {
-            val instance = getCustomInstance[DynamicValue](path, zio.blocks.typeid.TypeId.parse("zio.blocks.schema.DynamicValue").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[zio.blocks.typeid.TypeId[DynamicValue]])
+            val instance = getCustomInstance[DynamicValue](
+              path,
+              zio.blocks.typeid.TypeId
+                .parse("zio.blocks.schema.DynamicValue")
+                .getOrElse(throw new RuntimeException("Parse failed"))
+                .asInstanceOf[zio.blocks.typeid.TypeId[DynamicValue]]
+            )
               .getOrElse(deriver.deriveDynamic[G](metadata, doc, prependCombinedModifiers(modifiers, path, typeId)))
             new Reflect.Dynamic(new BindingInstance(metadata, instance), typeId, doc, modifiers)
           }

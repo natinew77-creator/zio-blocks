@@ -1863,7 +1863,10 @@ object DynamicPatch {
     new Schema(
       reflect = new Reflect.Record[Binding, Operation.Patch](
         fields = Vector(Reflect.Deferred(() => dynamicPatchSchema.reflect).asTerm("patch")),
-      typeId = TypeId.parse("zio.blocks.schema.patch.DynamicPatch.Operation.Patch").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[TypeId[Operation.Patch]],
+        typeId = TypeId
+          .parse("zio.blocks.schema.patch.DynamicPatch.Operation.Patch")
+          .getOrElse(throw new RuntimeException("Parse failed"))
+          .asInstanceOf[TypeId[Operation.Patch]],
         recordBinding = new Binding.Record(
           constructor = new Constructor[Operation.Patch] {
             def usedRegisters: RegisterOffset                                     = RegisterOffset(objects = 1)
@@ -1890,7 +1893,10 @@ object DynamicPatch {
         operationMapEditSchema.reflect.asTerm("MapEdit"),
         Reflect.Deferred(() => operationPatchSchema.reflect).asTerm("Patch")
       ),
-      typeId = TypeId.parse("zio.blocks.schema.patch.DynamicPatch.Operation").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[TypeId[Operation]],
+      typeId = TypeId
+        .parse("zio.blocks.schema.patch.DynamicPatch.Operation")
+        .getOrElse(throw new RuntimeException("Parse failed"))
+        .asInstanceOf[TypeId[Operation]],
       variantBinding = new Binding.Variant(
         discriminator = new Discriminator[Operation] {
           def discriminate(a: Operation): Int = a match {
@@ -1946,7 +1952,10 @@ object DynamicPatch {
           Schema[DynamicOptic].reflect.asTerm("path"),
           Reflect.Deferred(() => operationSchema.reflect).asTerm("operation")
         ),
-        typeId = TypeId.parse("zio.blocks.schema.patch.DynamicPatch.DynamicPatchOp").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[TypeId[DynamicPatchOp]],
+        typeId = TypeId
+          .parse("zio.blocks.schema.patch.DynamicPatch.DynamicPatchOp")
+          .getOrElse(throw new RuntimeException("Parse failed"))
+          .asInstanceOf[TypeId[DynamicPatchOp]],
         recordBinding = new Binding.Record(
           constructor = new Constructor[DynamicPatchOp] {
             def usedRegisters: RegisterOffset                                    = RegisterOffset(objects = 2)
@@ -1974,7 +1983,10 @@ object DynamicPatch {
     new Schema(
       reflect = new Reflect.Record[Binding, DynamicPatch](
         fields = Vector(Reflect.Deferred(() => Schema[Vector[DynamicPatchOp]].reflect).asTerm("ops")),
-        typeId = TypeId.parse("zio.blocks.schema.patch.DynamicPatch").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[TypeId[DynamicPatch]],
+        typeId = TypeId
+          .parse("zio.blocks.schema.patch.DynamicPatch")
+          .getOrElse(throw new RuntimeException("Parse failed"))
+          .asInstanceOf[TypeId[DynamicPatch]],
         recordBinding = new Binding.Record(
           constructor = new Constructor[DynamicPatch] {
             def usedRegisters: RegisterOffset                                  = RegisterOffset(objects = 1)

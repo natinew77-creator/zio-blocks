@@ -5,9 +5,9 @@ import zio.blocks.typeid._
 
 object VerificationSpec extends ZIOSpecDefault {
   // Helpers
-  val intId = TypeId(Owner.parse("scala"), "Int", Nil, TypeDefKind.Class(), Nil)
-  val stringId = TypeId(Owner.parse("java.lang"), "String", Nil, TypeDefKind.Class(), Nil)
-  val intType = TypeRepr.Ref(intId, Nil)
+  val intId      = TypeId(Owner.parse("scala"), "Int", Nil, TypeDefKind.Class(), Nil)
+  val stringId   = TypeId(Owner.parse("java.lang"), "String", Nil, TypeDefKind.Class(), Nil)
+  val intType    = TypeRepr.Ref(intId, Nil)
   val stringType = TypeRepr.Ref(stringId, Nil)
 
   def spec = suite("Final Logical Verification")(
@@ -28,28 +28,29 @@ object VerificationSpec extends ZIOSpecDefault {
     suite("Subtyping")(
       test("Contravariance works") {
         // Consumer[-A]
-        val consumerId = TypeId(Owner.parse("test"), "Consumer", 
-          List(TypeParam("A", 0, Variance.Contravariant)), 
-          TypeDefKind.Class(), Nil
+        val consumerId = TypeId(
+          Owner.parse("test"),
+          "Consumer",
+          List(TypeParam("A", 0, Variance.Contravariant)),
+          TypeDefKind.Class(),
+          Nil
         )
-        
+
         // Consumer[Any] <: Consumer[Int] because Int <: Any
         val consumerAny = TypeRepr.Ref(consumerId, List(TypeRepr.AnyType))
         val consumerInt = TypeRepr.Ref(consumerId, List(intType))
-        
+
         assertTrue(Subtyping.isSubtype(consumerAny, consumerInt))
       },
       test("Covariance works") {
-         // Producer[+A]
-        val producerId = TypeId(Owner.parse("test"), "Producer", 
-          List(TypeParam("A", 0, Variance.Covariant)), 
-          TypeDefKind.Class(), Nil
-        )
-        
+        // Producer[+A]
+        val producerId =
+          TypeId(Owner.parse("test"), "Producer", List(TypeParam("A", 0, Variance.Covariant)), TypeDefKind.Class(), Nil)
+
         // Producer[Int] <: Producer[Any]
         val producerAny = TypeRepr.Ref(producerId, List(TypeRepr.AnyType))
         val producerInt = TypeRepr.Ref(producerId, List(intType))
-        
+
         assertTrue(Subtyping.isSubtype(producerInt, producerAny))
       }
     )

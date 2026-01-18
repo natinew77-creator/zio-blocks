@@ -20,12 +20,11 @@ trait SchemaBaseSpec extends ZIOSpecDefault {
 
   import zio.blocks.typeid.{TypeId, TypeDefKind}
 
-  protected def stripMetadata[A](typeId: TypeId[A]): TypeId[A] = {
+  protected def stripMetadata[A](typeId: TypeId[A]): TypeId[A] =
     typeId.copy(
       kind = TypeDefKind.Class(),
       typeParams = Nil,
       parents = Nil,
       annotations = Nil
     )
-  }
 }

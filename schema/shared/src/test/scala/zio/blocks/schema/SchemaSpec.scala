@@ -14,42 +14,45 @@ import scala.collection.immutable.ArraySeq
 import zio.blocks.typeid._
 
 object SchemaSpec extends SchemaBaseSpec {
-  val schemaSpecOwner = Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("SchemaSpec")))
+  val schemaSpecOwner = Owner(
+    List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("SchemaSpec"))
+  )
   import zio.blocks.typeid.StandardTypes
 
   private def unsafeTypeId[A](s: String): TypeId[A] =
     TypeId.parse(s).fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[A]])
-    
+
   case class Namespace(parts: Seq[String], sub: Seq[String] = Nil) {
-     def toDotted: String = (parts ++ sub).mkString(".")
+    def toDotted: String = (parts ++ sub).mkString(".")
   }
   object Namespace {
-     val scala = Namespace(Seq("scala"))
+    val scala = Namespace(Seq("scala"))
   }
-    object TestTypeId {
-      def apply[A](namespace: Namespace, name: String, @annotation.unused params: Any*): TypeId[A] =
-        unsafeTypeId(s"${namespace.toDotted}.$name")
-      
-      val int = StandardTypes.int
-      val long = StandardTypes.long
-      val string = StandardTypes.string
-      val boolean = StandardTypes.boolean
-      val byte = StandardTypes.byte
-      val short = StandardTypes.short
-      val double = StandardTypes.double
-      val float = StandardTypes.float
-      val char = StandardTypes.char
-      val unit = StandardTypes.unit
-      
-      def map(@annotation.unused k: Any, @annotation.unused v: Any): TypeId[Map[Any, Any]] = unsafeTypeId("scala.collection.immutable.Map")
-      def set(@annotation.unused e: Any): TypeId[Set[Any]] = unsafeTypeId("scala.collection.immutable.Set")
-      def list(@annotation.unused e: Any): TypeId[List[Any]] = unsafeTypeId("scala.collection.immutable.List")
-      def vector(@annotation.unused e: Any): TypeId[Vector[Any]] = unsafeTypeId("scala.collection.immutable.Vector")
-      def option(@annotation.unused e: Any): TypeId[Option[Any]] = unsafeTypeId("scala.Option")
-      def chunk(@annotation.unused e: Any): TypeId[Chunk[Any]] = unsafeTypeId("zio.Chunk")
-      def seq(@annotation.unused e: Any): TypeId[Seq[Any]] = unsafeTypeId("scala.collection.immutable.Seq")
+  object TestTypeId {
+    def apply[A](namespace: Namespace, name: String, @annotation.unused params: Any*): TypeId[A] =
+      unsafeTypeId(s"${namespace.toDotted}.$name")
+
+    val int     = StandardTypes.int
+    val long    = StandardTypes.long
+    val string  = StandardTypes.string
+    val boolean = StandardTypes.boolean
+    val byte    = StandardTypes.byte
+    val short   = StandardTypes.short
+    val double  = StandardTypes.double
+    val float   = StandardTypes.float
+    val char    = StandardTypes.char
+    val unit    = StandardTypes.unit
+
+    def map(@annotation.unused k: Any, @annotation.unused v: Any): TypeId[Map[Any, Any]] = unsafeTypeId(
+      "scala.collection.immutable.Map"
+    )
+    def set(@annotation.unused e: Any): TypeId[Set[Any]]       = unsafeTypeId("scala.collection.immutable.Set")
+    def list(@annotation.unused e: Any): TypeId[List[Any]]     = unsafeTypeId("scala.collection.immutable.List")
+    def vector(@annotation.unused e: Any): TypeId[Vector[Any]] = unsafeTypeId("scala.collection.immutable.Vector")
+    def option(@annotation.unused e: Any): TypeId[Option[Any]] = unsafeTypeId("scala.Option")
+    def chunk(@annotation.unused e: Any): TypeId[Chunk[Any]]   = unsafeTypeId("zio.Chunk")
+    def seq(@annotation.unused e: Any): TypeId[Seq[Any]]       = unsafeTypeId("scala.collection.immutable.Seq")
   }
-  
 
   case class SchemaRecord(b: Byte, i: Int)
 
@@ -58,7 +61,10 @@ object SchemaSpec extends SchemaBaseSpec {
     val b: Lens[SchemaRecord, Byte]           = $(_.b)
     val i: Lens[SchemaRecord, Int]            = $(_.i)
     val x: Lens[SchemaRecord, Boolean]        = // invalid lens
-      Lens(schema.reflect.asRecord.get, Reflect.boolean[Binding].asTerm("x").asInstanceOf[Term.Bound[SchemaRecord, Boolean]])
+      Lens(
+        schema.reflect.asRecord.get,
+        Reflect.boolean[Binding].asTerm("x").asInstanceOf[Term.Bound[SchemaRecord, Boolean]]
+      )
   }
 
   sealed trait Variant
@@ -69,9 +75,7 @@ object SchemaSpec extends SchemaBaseSpec {
     val case2: Prism[Variant, Case2]     = $(_.when[Case2])
   }
 
-
   case class Case1(c: Char) extends Variant
-
 
   case class Case2(s: String) extends Variant
 
@@ -97,20 +101,17 @@ object SchemaSpec extends SchemaBaseSpec {
 
   case object Case extends Level1.MultiLevel
 
-
   case class Box1(l: Long) extends AnyVal
 
   object Box1 extends CompanionOptics[Box1] {
     implicit val schema: Schema[Box1] = Schema.derived
   }
 
-
   case class Box2(s: String) extends AnyVal
 
   object Box2 extends CompanionOptics[Box2] {
     implicit val schema: Schema[Box2] = Schema.derived
   }
-
 
   case class PosInt private (value: Int) extends AnyVal
 
@@ -127,7 +128,6 @@ object SchemaSpec extends SchemaBaseSpec {
     val wrapped: Optional[PosInt, Int]  = $(_.wrapped[Int])
   }
 
-
   case class Email(value: String)
 
   object Email extends CompanionOptics[Email] {
@@ -140,7 +140,6 @@ object SchemaSpec extends SchemaBaseSpec {
     hasField[SchemaError, String]("getMessage", _.getMessage, containsString(message))
 
   implicit val eitherSchema: Schema[Either[Int, Long]] = Schema.derived
-
 
   def encodeToString(f: CharBuffer => Unit): String = {
     val out = CharBuffer.allocate(1024)
@@ -248,10 +247,15 @@ object SchemaSpec extends SchemaBaseSpec {
         }
       )
 
-  val specOwner = Owner(List(
-      Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"),
-      Owner.Term("SchemaSpec"), Owner.Term("spec")
-    ))
+  val specOwner = Owner(
+    List(
+      Owner.Package("zio"),
+      Owner.Package("blocks"),
+      Owner.Package("schema"),
+      Owner.Term("SchemaSpec"),
+      Owner.Term("spec")
+    )
+  )
 
   def spec: Spec[TestEnvironment, Any] = suite("SchemaSpec")(
     suite("Reflect.Primitive")(
@@ -309,7 +313,9 @@ object SchemaSpec extends SchemaBaseSpec {
       },
       test("gets and updates record default value") {
         assert(SchemaRecord.schema.getDefaultValue)(isNone) &&
-        assert(SchemaRecord.schema.defaultValue(SchemaRecord(0, 0)).getDefaultValue)(isSome(equalTo(SchemaRecord(0, 0))))
+        assert(SchemaRecord.schema.defaultValue(SchemaRecord(0, 0)).getDefaultValue)(
+          isSome(equalTo(SchemaRecord(0, 0)))
+        )
       },
       test("gets and updates record documentation") {
         assert(SchemaRecord.schema.doc)(equalTo(Doc.Empty)) &&
@@ -320,9 +326,15 @@ object SchemaSpec extends SchemaBaseSpec {
         assert(SchemaRecord.schema.examples(SchemaRecord(2, 2000)).examples)(equalTo(SchemaRecord(2, 2000) :: Nil))
       },
       test("gets and updates default values of record fields using optic focus") {
-        assert(SchemaRecord.schema.defaultValue(SchemaRecord.b, 1: Byte).getDefaultValue(SchemaRecord.b))(isSome(equalTo(1: Byte))) &&
-        assert(SchemaRecord.schema.defaultValue(SchemaRecord.i, 1000).getDefaultValue(SchemaRecord.i))(isSome(equalTo(1000))) &&
-        assert(SchemaRecord.schema.defaultValue(SchemaRecord.x, true).getDefaultValue(SchemaRecord.x))(isNone) // invalid lens
+        assert(SchemaRecord.schema.defaultValue(SchemaRecord.b, 1: Byte).getDefaultValue(SchemaRecord.b))(
+          isSome(equalTo(1: Byte))
+        ) &&
+        assert(SchemaRecord.schema.defaultValue(SchemaRecord.i, 1000).getDefaultValue(SchemaRecord.i))(
+          isSome(equalTo(1000))
+        ) &&
+        assert(SchemaRecord.schema.defaultValue(SchemaRecord.x, true).getDefaultValue(SchemaRecord.x))(
+          isNone
+        ) // invalid lens
       },
       test("gets and updates documentation of record fields using optic focus") {
         assert(SchemaRecord.schema.doc(SchemaRecord.b, "b").doc(SchemaRecord.b))(equalTo(Doc("b"))) &&
@@ -332,7 +344,9 @@ object SchemaSpec extends SchemaBaseSpec {
       test("gets and updates examples of record fields using optic focus") {
         assert(SchemaRecord.schema.examples(SchemaRecord.b, 2: Byte).examples(SchemaRecord.b))(equalTo(Seq(2: Byte))) &&
         assert(SchemaRecord.schema.examples(SchemaRecord.i, 2000).examples(SchemaRecord.i))(equalTo(Seq(2000))) &&
-        assert(SchemaRecord.schema.examples(SchemaRecord.x, true).examples(SchemaRecord.x))(equalTo(Seq())) // invalid lens
+        assert(SchemaRecord.schema.examples(SchemaRecord.x, true).examples(SchemaRecord.x))(
+          equalTo(Seq())
+        ) // invalid lens
       },
       test("appends record modifiers") {
         val schema1 = SchemaRecord.schema
@@ -365,7 +379,9 @@ object SchemaSpec extends SchemaBaseSpec {
       test("has consistent gets for typed and dynamic optics") {
         assert(SchemaRecord.schema.get(SchemaRecord.b.toDynamic))(equalTo(SchemaRecord.schema.get(SchemaRecord.b))) &&
         assert(SchemaRecord.schema.get(SchemaRecord.i.toDynamic))(equalTo(SchemaRecord.schema.get(SchemaRecord.i))) &&
-        assert(SchemaRecord.schema.get(SchemaRecord.x.toDynamic))(equalTo(SchemaRecord.schema.get(SchemaRecord.x))) // invalid lens
+        assert(SchemaRecord.schema.get(SchemaRecord.x.toDynamic))(
+          equalTo(SchemaRecord.schema.get(SchemaRecord.x))
+        ) // invalid lens
       },
       test("derives schema for tuples") {
         type Tuple4 = (Byte, Short, Int, Long)
@@ -399,7 +415,16 @@ object SchemaSpec extends SchemaBaseSpec {
           isSome(equalTo(Vector("_1", "_2", "_3", "_4")))
         ) &&
         assert(Tuple4.schema.reflect.asRecord.map(_.fields.map(_.value.typeId)))(
-           isSome(equalTo(Vector(Schema[Byte].reflect.typeId, Schema[Short].reflect.typeId, Schema[Int].reflect.typeId, Schema[Long].reflect.typeId)))
+          isSome(
+            equalTo(
+              Vector(
+                Schema[Byte].reflect.typeId,
+                Schema[Short].reflect.typeId,
+                Schema[Int].reflect.typeId,
+                Schema[Long].reflect.typeId
+              )
+            )
+          )
         )
       },
       test("derives schema for record with default values and annotations using a macro call") {
@@ -443,9 +468,15 @@ object SchemaSpec extends SchemaBaseSpec {
         ) &&
         assert(`Record-1`.schema.reflect.asRecord.map(_.fields.size))(isSome(equalTo(2))) &&
         assert(`Record-1`.schema.reflect.asRecord.map(_.fields(0).name))(isSome(equalTo("b-1"))) &&
-        assert(`Record-1`.schema.reflect.asRecord.map(_.fields(0).modifiers))(isSome(equalTo(Seq(Modifier.config("field-key", "field-value-1"), Modifier.config("field-key", "field-value-2"))))) &&
+        assert(`Record-1`.schema.reflect.asRecord.map(_.fields(0).modifiers))(
+          isSome(
+            equalTo(Seq(Modifier.config("field-key", "field-value-1"), Modifier.config("field-key", "field-value-2")))
+          )
+        ) &&
         assert(`Record-1`.schema.reflect.asRecord.map(_.fields(1).name))(isSome(equalTo("f-2"))) &&
-        assert(`Record-1`.schema.reflect.asRecord.map(_.fields(1).modifiers))(isSome(equalTo(Seq(Modifier.transient()))))
+        assert(`Record-1`.schema.reflect.asRecord.map(_.fields(1).modifiers))(
+          isSome(equalTo(Seq(Modifier.transient())))
+        )
       },
       test("derives schema for generic record using a macro call") {
 
@@ -563,7 +594,6 @@ object SchemaSpec extends SchemaBaseSpec {
           v: Vector[Bar],
           s: Set[Bar]
         )
-
 
         case class Bar(val id: Int)
 
@@ -758,10 +788,15 @@ object SchemaSpec extends SchemaBaseSpec {
           isSome(
             equalTo(
               TypeId(
-                Owner(List(
-                  Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"),
-                  Owner.Term("SchemaSpec"), Owner.Term("spec")
-                )),
+                Owner(
+                  List(
+                    Owner.Package("zio"),
+                    Owner.Package("blocks"),
+                    Owner.Package("schema"),
+                    Owner.Term("SchemaSpec"),
+                    Owner.Term("spec")
+                  )
+                ),
                 "Record8",
                 Nil,
                 TypeDefKind.Class(),
@@ -780,19 +815,16 @@ object SchemaSpec extends SchemaBaseSpec {
 
           case class Foo(val foo: Int) extends MySealedTrait
 
-
           case class Bar(val bar: String) extends MySealedTrait
 
           implicit val schema: Schema[MySealedTrait] = Schema.derived
         }
-
 
         case class Child[T <: MySealedTrait](val test: T)
 
         object Child {
           implicit val schema: Schema[Child[MySealedTrait]] = Schema.derived
         }
-
 
         case class Parent(val child: Child[MySealedTrait])
 
@@ -865,7 +897,30 @@ object SchemaSpec extends SchemaBaseSpec {
           implicit val schema: Schema[Record24] = Schema.derived
           val i23: Lens[Record24, Int]          = $(_.i23)
           val s24: Lens[Record24, String]       = $(_.s24)
-          def _suppress(r: Record24) = (r.i1, r.i2, r.i3, r.i4, r.i5, r.i6, r.i7, r.i8, r.i9, r.i10, r.i11, r.i12, r.i13, r.i14, r.i15, r.i16, r.i17, r.i18, r.i19, r.i20, r.i21, r.i22)
+          def _suppress(r: Record24)            = (
+            r.i1,
+            r.i2,
+            r.i3,
+            r.i4,
+            r.i5,
+            r.i6,
+            r.i7,
+            r.i8,
+            r.i9,
+            r.i10,
+            r.i11,
+            r.i12,
+            r.i13,
+            r.i14,
+            r.i15,
+            r.i16,
+            r.i17,
+            r.i18,
+            r.i19,
+            r.i20,
+            r.i21,
+            r.i22
+          )
         }
 
         val record = Record24.schema.reflect.asRecord
@@ -887,7 +942,6 @@ object SchemaSpec extends SchemaBaseSpec {
               new Binding.Wrapper(x => new Right(Chunk.fromIterable(x)), _.toList)
             )
           )
-
 
         case class Test(chunk: Chunk[Int])
 
@@ -1157,7 +1211,6 @@ object SchemaSpec extends SchemaBaseSpec {
 
         case object NullValue extends Variant2[Null]
 
-
         case class Value[A](a: A) extends Variant2[A]
 
         object Variant2OfString extends CompanionOptics[Variant2[String]] {
@@ -1245,7 +1298,8 @@ object SchemaSpec extends SchemaBaseSpec {
         assert(variant2.map(x => stripMetadata(x.typeId).asInstanceOf[TypeId[Any]]))(
           isSome(
             equalTo(
-              TypeId(schemaSpecOwner / Owner.Term("Level1"), "MultiLevel", Nil, TypeDefKind.Trait(), Nil, Nil).asInstanceOf[TypeId[Any]]
+              TypeId(schemaSpecOwner / Owner.Term("Level1"), "MultiLevel", Nil, TypeDefKind.Trait(), Nil, Nil)
+                .asInstanceOf[TypeId[Any]]
             )
           )
         )
@@ -1253,9 +1307,7 @@ object SchemaSpec extends SchemaBaseSpec {
       test("derives schema for higher-kinded variant using a macro call") {
         sealed trait `Variant-3`[F[_]]
 
-
         case class `Case-1`[F[_]](val a: F[Double]) extends `Variant-3`[F]
-
 
         case class `Case-2`[F[_]](val a: F[Float]) extends `Variant-3`[F]
 
@@ -1290,15 +1342,11 @@ object SchemaSpec extends SchemaBaseSpec {
       test("derives schema for genetic variant with 'Nothing' type parameter using a macro call") {
         sealed trait Variant4[+E, +A]
 
-
         case class Error[E](val error: E) extends Variant4[E, Nothing]
-
 
         case class Fatal(val reason: String) extends Variant4[Nothing, Nothing]
 
-
         case class Success[A](val a: A) extends Variant4[Nothing, A]
-
 
         case class Timeout() extends Variant4[Nothing, Nothing]
 
@@ -1763,7 +1811,9 @@ object SchemaSpec extends SchemaBaseSpec {
         val elements  = Traversal.listValues(Reflect.int[Binding])
         val mapKeys   = Traversal.mapKeys(Reflect.map(Reflect.int[Binding], Reflect.long[Binding]))
         val mapValues = Traversal.mapValues(Reflect.map(Reflect.int[Binding], Reflect.long[Binding]))
-        assert(Schema(deferred1).defaultValue(SchemaRecord.b, 1: Byte).getDefaultValue(SchemaRecord.b))(isSome(equalTo(1: Byte))) &&
+        assert(Schema(deferred1).defaultValue(SchemaRecord.b, 1: Byte).getDefaultValue(SchemaRecord.b))(
+          isSome(equalTo(1: Byte))
+        ) &&
         assert(Schema(deferred2).defaultValue(Variant.case1, Case1('1')).getDefaultValue(Variant.case1))(
           isSome(equalTo(Case1('1')))
         ) &&

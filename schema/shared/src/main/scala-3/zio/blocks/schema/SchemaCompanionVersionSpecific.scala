@@ -589,7 +589,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           case '[et] =>
             val schema   = findImplicitOrDeriveSchema[et](eTpe)
             val classTag = summonClassTag[et]
-            val tpeId  = '{ TypeId.from[Array[et]] }
+            val tpeId    = '{ TypeId.from[Array[et]] }
             '{
               implicit val ct: ClassTag[et] = $classTag
               new Schema(
@@ -638,7 +638,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           case '[et] =>
             val schema   = findImplicitOrDeriveSchema[et](eTpe)
             val classTag = summonClassTag[et]
-            val tpeId  = '{ TypeId.from[IArray[et]] }
+            val tpeId    = '{ TypeId.from[IArray[et]] }
             '{
               implicit val ct: ClassTag[et] = $classTag
               new Schema(
@@ -687,7 +687,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           case '[et] =>
             val schema   = findImplicitOrDeriveSchema[et](eTpe)
             val classTag = summonClassTag[et]
-            val tpeId  = '{ TypeId.from[ArraySeq[et]] }
+            val tpeId    = '{ TypeId.from[ArraySeq[et]] }
             '{
               implicit val ct: ClassTag[et] = $classTag
               new Schema(
@@ -786,8 +786,8 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           val typeInfo =
             if (isGenericTuple(tTpe)) new GenericTupleInfo[tt](tTpe)
             else new ClassInfo[tt](tTpe)
-          val fields  = typeInfo.fields[tt](Array.empty[String])
-          val tpeId = '{ TypeId.from[tt] }
+          val fields = typeInfo.fields[tt](Array.empty[String])
+          val tpeId  = '{ TypeId.from[tt] }
           '{
             new Schema(
               reflect = new Reflect.Record[Binding, tt](
@@ -856,8 +856,8 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           val typeInfo =
             if (isGenericTuple(tTpe)) new GenericTupleInfo[tt](tTpe)
             else new ClassInfo[tt](tTpe)
-          val fields  = typeInfo.fields[T](nameOverrides)
-          val tpeId = '{ TypeId.from[T] }
+          val fields = typeInfo.fields[T](nameOverrides)
+          val tpeId  = '{ TypeId.from[T] }
           '{
             new Schema(
               reflect = new Reflect.Record[Binding, T](
@@ -893,16 +893,16 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
       val sTpe = opaqueDealias(tpe)
       sTpe.asType match {
         case '[s] =>
-          val schema  = findImplicitOrDeriveSchema[s](sTpe)
-          val tpeId = '{ TypeId.from[T].asInstanceOf[TypeId[s]] }
+          val schema = findImplicitOrDeriveSchema[s](sTpe)
+          val tpeId  = '{ TypeId.from[T].asInstanceOf[TypeId[s]] }
           '{ new Schema($schema.reflect.typeId($tpeId)).asInstanceOf[Schema[T]] }
       }
     } else if (isZioPreludeNewtype(tpe)) {
       val sTpe = zioPreludeNewtypeDealias(tpe)
       sTpe.asType match {
         case '[s] =>
-          val schema  = findImplicitOrDeriveSchema[s](sTpe)
-          val tpeId = '{ TypeId.from[T].asInstanceOf[TypeId[s]] }
+          val schema = findImplicitOrDeriveSchema[s](sTpe)
+          val tpeId  = '{ TypeId.from[T].asInstanceOf[TypeId[s]] }
           '{ new Schema($schema.reflect.typeId($tpeId)).asInstanceOf[Schema[T]] }
       }
     } else if (isTypeRef(tpe)) {
@@ -937,7 +937,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
   private def deriveSchemaForNonAbstractScalaClass[T: Type](tpe: TypeRepr)(using Quotes): Expr[Schema[T]] = {
     val classInfo = new ClassInfo(tpe)
     val fields    = classInfo.fields(Array.empty[String])
-    val tpeId   = '{ TypeId.from[T] }
+    val tpeId     = '{ TypeId.from[T] }
     '{
       new Schema(
         reflect = new Reflect.Record[Binding, T](
@@ -1070,7 +1070,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
     var packages: List[String] = Nil
     var values: List[String]   = Nil
     var name: String           = null
-    val tpeTypeSymbol = tpe.typeSymbol
+    val tpeTypeSymbol          = tpe.typeSymbol
     name = tpeTypeSymbol.name
     if (isEnumValue(tpe)) {
       values = name :: values

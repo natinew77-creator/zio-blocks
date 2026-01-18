@@ -11,12 +11,12 @@ object DerivedOpticsSpec extends SchemaBaseSpec {
     TypeId.parse(s).fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[A]])
 
   case class Namespace(parts: Seq[String], sub: Seq[String] = Nil) {
-     def toDotted: String = (parts ++ sub).mkString(".")
+    def toDotted: String = (parts ++ sub).mkString(".")
   }
 
   object TestTypeId {
-     def apply[A](namespace: Namespace, name: String, @annotation.unused params: Any*): TypeId[A] =
-       unsafeTypeId(s"${namespace.toDotted}.$name")
+    def apply[A](namespace: Namespace, name: String, @annotation.unused params: Any*): TypeId[A] =
+      unsafeTypeId(s"${namespace.toDotted}.$name")
   }
 
   case class Person(name: String, age: Int)

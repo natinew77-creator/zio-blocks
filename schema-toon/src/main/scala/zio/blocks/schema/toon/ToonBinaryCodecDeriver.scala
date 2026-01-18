@@ -353,16 +353,16 @@ class ToonBinaryCodecDeriver private[toon] (
       val binding = wrapper.wrapperBinding.asInstanceOf[Binding.Wrapper[A, B]]
       val codec   = deriveCodec(wrapper.wrapped)
       new ToonBinaryCodec[A](wrapper.wrapperPrimitiveType.fold(ToonBinaryCodec.objectType) {
-        case _: PrimitiveType.Boolean   => ToonBinaryCodec.booleanType
-        case _: PrimitiveType.Byte      => ToonBinaryCodec.byteType
-        case _: PrimitiveType.Char      => ToonBinaryCodec.charType
-        case _: PrimitiveType.Short     => ToonBinaryCodec.shortType
-        case _: PrimitiveType.Float     => ToonBinaryCodec.floatType
-        case _: PrimitiveType.Int       => ToonBinaryCodec.intType
-        case _: PrimitiveType.Double    => ToonBinaryCodec.doubleType
-        case _: PrimitiveType.Long      => ToonBinaryCodec.longType
-        case _: PrimitiveType.Unit      => ToonBinaryCodec.unitType
-        case _                          => ToonBinaryCodec.objectType
+        case _: PrimitiveType.Boolean => ToonBinaryCodec.booleanType
+        case _: PrimitiveType.Byte    => ToonBinaryCodec.byteType
+        case _: PrimitiveType.Char    => ToonBinaryCodec.charType
+        case _: PrimitiveType.Short   => ToonBinaryCodec.shortType
+        case _: PrimitiveType.Float   => ToonBinaryCodec.floatType
+        case _: PrimitiveType.Int     => ToonBinaryCodec.intType
+        case _: PrimitiveType.Double  => ToonBinaryCodec.doubleType
+        case _: PrimitiveType.Long    => ToonBinaryCodec.longType
+        case _: PrimitiveType.Unit    => ToonBinaryCodec.unitType
+        case _                        => ToonBinaryCodec.objectType
       }) {
         private[this] val unwrap       = binding.unwrap
         private[this] val wrap         = binding.wrap

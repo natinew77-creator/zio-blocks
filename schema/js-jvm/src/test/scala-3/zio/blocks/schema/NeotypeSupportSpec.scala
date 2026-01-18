@@ -10,14 +10,29 @@ import zio.test._
 
 object NeotypeSupportSpec extends SchemaBaseSpec {
   object TypeId {
-    def parse(s: String) = zio.blocks.typeid.TypeId.parse(s)
-    def option(@annotation.unused e: Any) = zio.blocks.typeid.TypeId.parse("scala.Option").getOrElse(throw new RuntimeException("fail")).asInstanceOf[zio.blocks.typeid.TypeId[Option[Any]]]
-    def list(@annotation.unused e: Any) = zio.blocks.typeid.TypeId.parse("scala.collection.immutable.List").getOrElse(throw new RuntimeException("fail")).asInstanceOf[zio.blocks.typeid.TypeId[List[Any]]]
-    def vector(@annotation.unused e: Any) = zio.blocks.typeid.TypeId.parse("scala.collection.immutable.Vector").getOrElse(throw new RuntimeException("fail")).asInstanceOf[zio.blocks.typeid.TypeId[Vector[Any]]]
-    def set(@annotation.unused e: Any) = zio.blocks.typeid.TypeId.parse("scala.collection.immutable.Set").getOrElse(throw new RuntimeException("fail")).asInstanceOf[zio.blocks.typeid.TypeId[Set[Any]]]
-    def map(@annotation.unused k: Any, @annotation.unused v: Any) = zio.blocks.typeid.TypeId.parse("scala.collection.immutable.Map").getOrElse(throw new RuntimeException("fail")).asInstanceOf[zio.blocks.typeid.TypeId[Map[Any, Any]]]
+    def parse(s: String)                  = zio.blocks.typeid.TypeId.parse(s)
+    def option(@annotation.unused e: Any) = zio.blocks.typeid.TypeId
+      .parse("scala.Option")
+      .getOrElse(throw new RuntimeException("fail"))
+      .asInstanceOf[zio.blocks.typeid.TypeId[Option[Any]]]
+    def list(@annotation.unused e: Any) = zio.blocks.typeid.TypeId
+      .parse("scala.collection.immutable.List")
+      .getOrElse(throw new RuntimeException("fail"))
+      .asInstanceOf[zio.blocks.typeid.TypeId[List[Any]]]
+    def vector(@annotation.unused e: Any) = zio.blocks.typeid.TypeId
+      .parse("scala.collection.immutable.Vector")
+      .getOrElse(throw new RuntimeException("fail"))
+      .asInstanceOf[zio.blocks.typeid.TypeId[Vector[Any]]]
+    def set(@annotation.unused e: Any) = zio.blocks.typeid.TypeId
+      .parse("scala.collection.immutable.Set")
+      .getOrElse(throw new RuntimeException("fail"))
+      .asInstanceOf[zio.blocks.typeid.TypeId[Set[Any]]]
+    def map(@annotation.unused k: Any, @annotation.unused v: Any) = zio.blocks.typeid.TypeId
+      .parse("scala.collection.immutable.Map")
+      .getOrElse(throw new RuntimeException("fail"))
+      .asInstanceOf[zio.blocks.typeid.TypeId[Map[Any, Any]]]
   }
-  
+
   def spec: Spec[TestEnvironment, Any] = suite("NeotypeSupportSpec")(
     test("derive schemas for cases classes with subtype and newtype fields") {
       val value = new Planet(Name("Earth"), Kilogram(5.97e24), Meter(6378000.0), Some(Meter(1.5e15)))
@@ -34,13 +49,40 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       ) &&
       assert(Planet.schema.fromDynamicValue(Planet.schema.toDynamicValue(value)))(isRight(equalTo(value))) &&
       assert(stripMetadata(Planet.name.focus.typeId).copy(args = Nil))(
-        equalTo(zio.blocks.typeid.TypeId(Owner(List(Owner.Package("neotype"), Owner.Type("Newtype"))), "Type", Nil, TypeDefKind.Class(), Nil, Nil))
+        equalTo(
+          zio.blocks.typeid.TypeId(
+            Owner(List(Owner.Package("neotype"), Owner.Type("Newtype"))),
+            "Type",
+            Nil,
+            TypeDefKind.Class(),
+            Nil,
+            Nil
+          )
+        )
       ) &&
       assert(stripMetadata(Planet.mass.focus.typeId).copy(args = Nil))(
-        equalTo(zio.blocks.typeid.TypeId(Owner(List(Owner.Package("neotype"), Owner.Type("Subtype"))), "Type", Nil, TypeDefKind.Class(), Nil, Nil))
+        equalTo(
+          zio.blocks.typeid.TypeId(
+            Owner(List(Owner.Package("neotype"), Owner.Type("Subtype"))),
+            "Type",
+            Nil,
+            TypeDefKind.Class(),
+            Nil,
+            Nil
+          )
+        )
       ) &&
       assert(stripMetadata(Planet.radius.focus.typeId).copy(args = Nil))(
-        equalTo(zio.blocks.typeid.TypeId(Owner(List(Owner.Package("neotype"), Owner.Type("Newtype"))), "Type", Nil, TypeDefKind.Class(), Nil, Nil))
+        equalTo(
+          zio.blocks.typeid.TypeId(
+            Owner(List(Owner.Package("neotype"), Owner.Type("Newtype"))),
+            "Type",
+            Nil,
+            TypeDefKind.Class(),
+            Nil,
+            Nil
+          )
+        )
       ) &&
       assert(stripMetadata(Planet.distanceFromSun.focus.typeId).copy(args = Nil).asInstanceOf[TypeId[Any]])(
         equalTo(

@@ -1,8 +1,8 @@
 package zio.blocks.typeid
 
 final case class TypeBounds(
-  lower: Option[TypeRepr],  // >: bound
-  upper: Option[TypeRepr]   // <: bound
+  lower: Option[TypeRepr], // >: bound
+  upper: Option[TypeRepr]  // <: bound
 ) {
   def isUnbounded: Boolean = lower.isEmpty && upper.isEmpty
 

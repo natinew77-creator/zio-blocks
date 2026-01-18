@@ -7,7 +7,7 @@ object TypeDefKind {
     isFinal: Boolean = false,
     isAbstract: Boolean = false,
     isCase: Boolean = false,
-    isValue: Boolean = false 
+    isValue: Boolean = false
   ) extends TypeDefKind
 
   final case class Trait(
@@ -24,13 +24,13 @@ object TypeDefKind {
   final case class EnumCase(
     parentEnum: TypeRepr,
     ordinal: Int,
-    isObjectCase: Boolean 
+    isObjectCase: Boolean
   ) extends TypeDefKind
 
   final case class TypeAlias(alias: TypeRepr) extends TypeDefKind
 
   final case class OpaqueType(
-    publicBounds: TypeBounds 
+    publicBounds: TypeBounds
   ) extends TypeDefKind
 
   case object AbstractType extends TypeDefKind

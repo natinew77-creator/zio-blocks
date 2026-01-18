@@ -8,8 +8,6 @@ import scala.collection.immutable.ArraySeq
 import zio.blocks.typeid.TypeId
 import zio.blocks.typeid.StandardTypes
 
-
-
 sealed trait Reflect[F[_, _], A] extends Reflectable[A] { self =>
   protected def inner: Any
 
@@ -169,9 +167,7 @@ sealed trait Reflect[F[_, _], A] extends Reflectable[A] { self =>
 
   def transform[G[_, _]](path: DynamicOptic, f: ReflectTransformer[F, G]): Lazy[Reflect[G, A]]
 
-
   //  def typeName(value: TypeId[A]): Reflect[F, A] (Moved)
-
 
   def updated[B](optic: Optic[A, B])(f: Reflect[F, B] => Reflect[F, B]): Option[Reflect[F, A]] =
     updated(optic.toDynamic)(new Reflect.Updater[F] {
@@ -610,7 +606,6 @@ object Reflect {
         variant <- f.transformVariant(path, cases, typeId, variantBinding, doc, modifiers)
       } yield variant
 
-
     def typeId(value: TypeId[A]): Variant[F, A] = copy(typeId = value)
 
     def nodeType: Reflect.Type.Variant.type = Reflect.Type.Variant
@@ -951,7 +946,10 @@ object Reflect {
 
   case class Dynamic[F[_, _]](
     dynamicBinding: F[BindingType.Dynamic, DynamicValue],
-    typeId: TypeId[DynamicValue] = TypeId.parse("zio.blocks.schema.DynamicValue").getOrElse(throw new Exception("Parse failed")).asInstanceOf[TypeId[DynamicValue]],
+    typeId: TypeId[DynamicValue] = TypeId
+      .parse("zio.blocks.schema.DynamicValue")
+      .getOrElse(throw new Exception("Parse failed"))
+      .asInstanceOf[TypeId[DynamicValue]],
     doc: Doc = Doc.Empty,
     modifiers: Seq[Modifier.Reflect] = Nil
   ) extends Reflect[F, DynamicValue] {
@@ -1577,7 +1575,11 @@ object Reflect {
     )
 
   private[this] def none[F[_, _]](implicit F: FromBinding[F]): Record[F, None.type] =
-    new Record(Vector(), TypeId.parse("scala.None").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[TypeId[None.type]], F.fromBinding(Binding.Record.none))
+    new Record(
+      Vector(),
+      TypeId.parse("scala.None").getOrElse(throw new RuntimeException("Parse failed")).asInstanceOf[TypeId[None.type]],
+      F.fromBinding(Binding.Record.none)
+    )
 
   def option[F[_, _], A <: AnyRef](element: Reflect[F, A])(implicit F: FromBinding[F]): Variant[F, Option[A]] =
     new Variant(
@@ -1650,25 +1652,49 @@ object Reflect {
     )
 
   def set[F[_, _], A](element: Reflect[F, A])(implicit F: FromBinding[F]): Sequence[F, A, Set] =
-    new Sequence(element, StandardTypes.SetId.asInstanceOf[TypeId[scala.collection.immutable.Set[A]]], F.fromBinding(Binding.Seq.set))
+    new Sequence(
+      element,
+      StandardTypes.SetId.asInstanceOf[TypeId[scala.collection.immutable.Set[A]]],
+      F.fromBinding(Binding.Seq.set)
+    )
 
   def list[F[_, _], A](element: Reflect[F, A])(implicit F: FromBinding[F]): Sequence[F, A, List] =
-    new Sequence(element, StandardTypes.ListId.asInstanceOf[TypeId[scala.collection.immutable.List[A]]], F.fromBinding(Binding.Seq.list))
+    new Sequence(
+      element,
+      StandardTypes.ListId.asInstanceOf[TypeId[scala.collection.immutable.List[A]]],
+      F.fromBinding(Binding.Seq.list)
+    )
 
   def vector[F[_, _], A](element: Reflect[F, A])(implicit F: FromBinding[F]): Sequence[F, A, Vector] =
-    new Sequence(element, StandardTypes.VectorId.asInstanceOf[TypeId[scala.collection.immutable.Vector[A]]], F.fromBinding(Binding.Seq.vector))
+    new Sequence(
+      element,
+      StandardTypes.VectorId.asInstanceOf[TypeId[scala.collection.immutable.Vector[A]]],
+      F.fromBinding(Binding.Seq.vector)
+    )
 
   def indexedSeq[F[_, _], A](element: Reflect[F, A])(implicit F: FromBinding[F]): Sequence[F, A, IndexedSeq] =
-    new Sequence(element, StandardTypes.IndexedSeqId.asInstanceOf[TypeId[scala.collection.immutable.IndexedSeq[A]]], F.fromBinding(Binding.Seq.indexedSeq))
+    new Sequence(
+      element,
+      StandardTypes.IndexedSeqId.asInstanceOf[TypeId[scala.collection.immutable.IndexedSeq[A]]],
+      F.fromBinding(Binding.Seq.indexedSeq)
+    )
 
   def seq[F[_, _], A](element: Reflect[F, A])(implicit F: FromBinding[F]): Sequence[F, A, Seq] =
-    new Sequence(element, StandardTypes.SeqId.asInstanceOf[TypeId[scala.collection.immutable.Seq[A]]], F.fromBinding(Binding.Seq.seq))
+    new Sequence(
+      element,
+      StandardTypes.SeqId.asInstanceOf[TypeId[scala.collection.immutable.Seq[A]]],
+      F.fromBinding(Binding.Seq.seq)
+    )
 
   def map[F[_, _], K, V](key: Reflect[F, K], value: Reflect[F, V])(implicit
     F: FromBinding[F]
-  ): Map[F, K, V, collection.immutable.Map] = {
-    new Map(key, value, StandardTypes.MapId.asInstanceOf[TypeId[scala.collection.immutable.Map[K, V]]], F.fromBinding(Binding.Map.map))
-  }
+  ): Map[F, K, V, collection.immutable.Map] =
+    new Map(
+      key,
+      value,
+      StandardTypes.MapId.asInstanceOf[TypeId[scala.collection.immutable.Map[K, V]]],
+      F.fromBinding(Binding.Map.map)
+    )
 
   object Extractors {
     object List {

@@ -20,51 +20,53 @@ object JsonBinaryCodecDeriverSpec extends SchemaBaseSpec {
     TypeId.parse(s).fold(e => throw new RuntimeException(e), _.asInstanceOf[TypeId[A]])
 
   case class TestNs(parts: Seq[String], sub: Seq[String] = Nil) {
-     def toDotted: String = (parts ++ sub).mkString(".")
+    def toDotted: String = (parts ++ sub).mkString(".")
   }
 
   object TestTypeId {
-     def apply[A](namespace: TestNs, name: String, @annotation.unused params: Any*): TypeId[A] =
-       unsafeTypeId(s"${namespace.toDotted}.$name")
+    def apply[A](namespace: TestNs, name: String, @annotation.unused params: Any*): TypeId[A] =
+      unsafeTypeId(s"${namespace.toDotted}.$name")
 
-     val int = StandardTypes.int
-     val long = StandardTypes.long
-     val string = StandardTypes.string
-     val boolean = StandardTypes.boolean
-     val byte = StandardTypes.byte
-     val short = StandardTypes.short
-     val double = StandardTypes.double
-     val float = StandardTypes.float
-     val char = StandardTypes.char
-     val unit = StandardTypes.unit
-     val bigDecimal = StandardTypes.bigDecimal
-     val bigInt = StandardTypes.bigInt
-     val dayOfWeek = StandardTypes.dayOfWeek
-     val duration = StandardTypes.duration
-     val instant = StandardTypes.instant
-     val localDate = StandardTypes.localDate
-     val localDateTime = StandardTypes.localDateTime
-     val localTime = StandardTypes.localTime
-     val month = StandardTypes.month
-     val monthDay = StandardTypes.monthDay
-     val offsetDateTime = StandardTypes.offsetDateTime
-     val currency = StandardTypes.currency
-     val offsetTime = StandardTypes.offsetTime
-     val period = StandardTypes.period
-     val year = StandardTypes.year
-     val yearMonth = StandardTypes.yearMonth
-     val zonedDateTime = StandardTypes.zonedDateTime
-     val zoneId = StandardTypes.zoneId
-     val zoneOffset = StandardTypes.zoneOffset
-     val uuid = StandardTypes.uuid
+    val int            = StandardTypes.int
+    val long           = StandardTypes.long
+    val string         = StandardTypes.string
+    val boolean        = StandardTypes.boolean
+    val byte           = StandardTypes.byte
+    val short          = StandardTypes.short
+    val double         = StandardTypes.double
+    val float          = StandardTypes.float
+    val char           = StandardTypes.char
+    val unit           = StandardTypes.unit
+    val bigDecimal     = StandardTypes.bigDecimal
+    val bigInt         = StandardTypes.bigInt
+    val dayOfWeek      = StandardTypes.dayOfWeek
+    val duration       = StandardTypes.duration
+    val instant        = StandardTypes.instant
+    val localDate      = StandardTypes.localDate
+    val localDateTime  = StandardTypes.localDateTime
+    val localTime      = StandardTypes.localTime
+    val month          = StandardTypes.month
+    val monthDay       = StandardTypes.monthDay
+    val offsetDateTime = StandardTypes.offsetDateTime
+    val currency       = StandardTypes.currency
+    val offsetTime     = StandardTypes.offsetTime
+    val period         = StandardTypes.period
+    val year           = StandardTypes.year
+    val yearMonth      = StandardTypes.yearMonth
+    val zonedDateTime  = StandardTypes.zonedDateTime
+    val zoneId         = StandardTypes.zoneId
+    val zoneOffset     = StandardTypes.zoneOffset
+    val uuid           = StandardTypes.uuid
 
-     def list[A](@annotation.unused e: Any): TypeId[List[A]] = unsafeTypeId("scala.collection.immutable.List")
-     def vector[A](@annotation.unused e: Any): TypeId[Vector[A]] = unsafeTypeId("scala.collection.immutable.Vector")
-     def map[K, V](@annotation.unused k: Any, @annotation.unused v: Any): TypeId[Map[K, V]] = unsafeTypeId("scala.collection.immutable.Map")
-     def set[A](@annotation.unused e: Any): TypeId[Set[A]] = unsafeTypeId("scala.collection.immutable.Set")
-     def seq[A](@annotation.unused e: Any): TypeId[Seq[A]] = unsafeTypeId("scala.collection.immutable.Seq")
-     def chunk[A](@annotation.unused e: Any): TypeId[zio.Chunk[A]] = unsafeTypeId("zio.Chunk")
-     def option[A](@annotation.unused e: Any): TypeId[Option[A]] = unsafeTypeId("scala.Option")
+    def list[A](@annotation.unused e: Any): TypeId[List[A]]                                = unsafeTypeId("scala.collection.immutable.List")
+    def vector[A](@annotation.unused e: Any): TypeId[Vector[A]]                            = unsafeTypeId("scala.collection.immutable.Vector")
+    def map[K, V](@annotation.unused k: Any, @annotation.unused v: Any): TypeId[Map[K, V]] = unsafeTypeId(
+      "scala.collection.immutable.Map"
+    )
+    def set[A](@annotation.unused e: Any): TypeId[Set[A]]         = unsafeTypeId("scala.collection.immutable.Set")
+    def seq[A](@annotation.unused e: Any): TypeId[Seq[A]]         = unsafeTypeId("scala.collection.immutable.Seq")
+    def chunk[A](@annotation.unused e: Any): TypeId[zio.Chunk[A]] = unsafeTypeId("zio.Chunk")
+    def option[A](@annotation.unused e: Any): TypeId[Option[A]]   = unsafeTypeId("scala.Option")
   }
 
   def spec: Spec[TestEnvironment, Any] = suite("JsonBinaryCodecDeriverSpec")(

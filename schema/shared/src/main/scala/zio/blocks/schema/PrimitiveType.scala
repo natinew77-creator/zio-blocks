@@ -486,4 +486,3 @@ object PrimitiveType {
       }
   }
 }
-
