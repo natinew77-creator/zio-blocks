@@ -8,7 +8,7 @@ object TypeIdMacros {
     import quotes.reflect._
 
     def getTypeId(rootTpe: TypeRepr): Expr[TypeId[A]] = {
-      def getTypeIdImpl(tpe: TypeRepr): Expr[TypeId[?]] =
+      def getTypeIdImpl(tpe: TypeRepr): Expr[TypeId[?]] = {
         tpe match {
           case t: TypeRef =>
             makeTypeId(t.typeSymbol, Nil, deep = true)
@@ -17,10 +17,15 @@ object TypeIdMacros {
             makeTypeId(t.termSymbol, Nil, deep = true)
 
           case AppliedType(base, args) =>
-            base.dealias match {
+            base match {
               case t: TypeRef => makeTypeId(t.typeSymbol, args, deep = true)
               case t: TermRef => makeTypeId(t.termSymbol, args, deep = true)
-              case _          => getTypeIdImpl(base) // Fallback, might lose args if structure is weird
+              case _          =>
+                base.dealias match {
+                  case t: TypeRef => makeTypeId(t.typeSymbol, args, deep = true)
+                  case t: TermRef => makeTypeId(t.termSymbol, args, deep = true)
+                  case _          => getTypeIdImpl(base)
+                }
             }
 
           case AndType(l, r) =>
@@ -47,6 +52,7 @@ object TypeIdMacros {
             // Fallback for refinements etc.
             makeSyntheticTypeId("Refined", Nil)
         }
+      }
       val res = getTypeIdImpl(rootTpe)
       '{ $res.asInstanceOf[TypeId[A]] }
     }

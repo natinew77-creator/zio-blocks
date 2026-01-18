@@ -11,6 +11,8 @@ import zio.blocks.schema.binding._
 import zio.blocks.schema.binding.RegisterOffset._
 import zio.blocks.schema.CommonMacroOps
 
+
+
 trait SchemaCompanionVersionSpecific {
   inline def derived[A]: Schema[A] = ${ SchemaCompanionVersionSpecificImpl.derived }
 }
@@ -158,8 +160,10 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
     CommonMacroOps.normalizeGenericTuple(genericTupleTypeArgs(tpe))
 
   private def isNamedTuple(tpe: TypeRepr): Boolean = tpe match {
-    case AppliedType(ntTpe, _) => ntTpe.typeSymbol.fullName == "scala.NamedTuple$.NamedTuple"
-    case _                     => false
+    case AppliedType(ntTpe, _) =>
+      val name = ntTpe.typeSymbol.fullName
+      name == "scala.NamedTuple$.NamedTuple" || name.endsWith(".NamedTuple")
+    case _ => false
   }
 
   private def isJavaTime(tpe: TypeRepr): Boolean = tpe.typeSymbol.fullName.startsWith("java.time.") &&
@@ -857,7 +861,24 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
             if (isGenericTuple(tTpe)) new GenericTupleInfo[tt](tTpe)
             else new ClassInfo[tt](tTpe)
           val fields = typeInfo.fields[T](nameOverrides)
-          val tpeId  = '{ TypeId.from[T] }
+          val argsExpr = Expr.ofList(tpe.typeArgs.map { arg =>
+            val argNorm = if (isGenericTuple(arg)) normalizeGenericTuple(arg) else arg
+            argNorm.asType match {
+              case '[t] =>
+                '{ zio.blocks.typeid.TypeRepr.Ref(zio.blocks.typeid.TypeId.from[t], Nil) }
+            }
+          })
+          val tpeId = '{
+            zio.blocks.typeid.TypeId(
+              zio.blocks.typeid.Owner.parse("scala"),
+              "NamedTuple",
+              Nil,
+              zio.blocks.typeid.TypeDefKind.Class(),
+              Nil,
+              $argsExpr,
+              Nil
+            ).asInstanceOf[TypeId[T]]
+          }
           '{
             new Schema(
               reflect = new Reflect.Record[Binding, T](

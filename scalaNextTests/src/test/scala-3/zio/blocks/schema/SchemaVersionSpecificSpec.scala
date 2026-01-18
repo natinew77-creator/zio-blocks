@@ -80,6 +80,7 @@ object SchemaVersionSpecificSpec extends SchemaBaseSpec {
           equalTo(Vector("i", "s"))
         ) &&
         assert(schema1.reflect.typeId.name)(equalTo("NamedTuple")) &&
+        assert(schema2.reflect.typeId.name)(equalTo("NamedTuple")) &&
         assert(schema1)(equalTo(schema2)) &&
         assert(schema1)(equalTo(schema3)) &&
         assert(schema1)(equalTo(schema4)) &&
