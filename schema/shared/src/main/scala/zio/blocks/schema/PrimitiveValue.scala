@@ -22,7 +22,7 @@ object PrimitiveValue {
   case object Unit extends PrimitiveValue {
     type Type = scala.Unit
 
-    def primitiveType: PrimitiveType[scala.Unit] = PrimitiveType.Unit
+    def primitiveType: PrimitiveType[scala.Unit] = new PrimitiveType.Unit(zio.blocks.schema.Validation.None)
 
     def typeIndex: scala.Int = 0
 

@@ -119,7 +119,7 @@ object DerivedOptics {
                 (r: Registers, o: RegisterOffset) => r.getChar(o),
                 (r: Registers, o: RegisterOffset, v: Any) => r.setChar(o, v.asInstanceOf[Char])
               )
-            case PrimitiveType.Unit =>
+            case _: PrimitiveType.Unit =>
               (
                 RegisterOffset(0),
                 (_: Registers, _: RegisterOffset) => (),
@@ -168,7 +168,7 @@ object DerivedOptics {
 
     Reflect.Record(
       fields = IndexedSeq(fieldTerm.asInstanceOf[Term[Binding, A, ?]]),
-      typeName = wrapper.typeName,
+      typeId = wrapper.typeId,
       recordBinding = syntheticBinding
     )
   }

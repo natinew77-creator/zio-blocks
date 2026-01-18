@@ -9,7 +9,7 @@ object PrimitiveValueSpec extends SchemaBaseSpec {
   def spec: Spec[TestEnvironment, Any] = suite("PrimitiveValueSpec")(
     suite("PrimitiveValue.Unit")(
       test("has correct primitiveType and typeIndex") {
-        assert(PrimitiveValue.Unit.primitiveType)(equalTo(PrimitiveType.Unit)) &&
+        assert(PrimitiveValue.Unit.primitiveType)(equalTo(PrimitiveType.Unit(Validation.None))) &&
         assert(PrimitiveValue.Unit.typeIndex)(equalTo(0))
       },
       test("has compatible compare and comparison operators") {

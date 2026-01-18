@@ -9,7 +9,7 @@ object PrimitiveTypeSpec extends SchemaBaseSpec {
   def spec: Spec[TestEnvironment, Any] = suite("PrimitiveTypeSpec")(
     suite("PrimitiveType.Unit")(
       test("has consistent toDynamicValue and fromDynamicValue") {
-        val tpe = PrimitiveType.Unit
+        val tpe = PrimitiveType.Unit(None)
         assertTrue(tpe.toDynamicValue(()) == DynamicValue.Primitive(PrimitiveValue.Unit)) &&
         assert(tpe.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Unit)))(isRight(equalTo(()))) &&
         assert(tpe.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(1))))(
@@ -17,7 +17,7 @@ object PrimitiveTypeSpec extends SchemaBaseSpec {
         )
       },
       test("Validation is set to None") {
-        assert(PrimitiveType.Unit.validation)(equalTo(None))
+        assert(PrimitiveType.Unit(None).validation)(equalTo(None))
       }
     ),
     suite("PrimitiveType.Byte")(
