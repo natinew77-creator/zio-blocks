@@ -1239,6 +1239,12 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
     '{ new Array[T]($size)(using ${ summonClassTag[T] }) }
 
   private def toFullTermName(tpe: TypeRepr): Array[String] = {
+    // Special handling for java.lang.String - normalize to scala.String
+    // to match original TypeName.string behavior for consistent discriminator names
+    if (tpe =:= TypeRepr.of[java.lang.String]) {
+      return Array("scala", "String")
+    }
+    
     var packages: List[String] = Nil
     var values: List[String]   = Nil
     var name: String           = null

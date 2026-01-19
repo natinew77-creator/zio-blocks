@@ -632,6 +632,12 @@ private object SchemaCompanionVersionSpecific {
     }
 
     def toFullTermName(tId: TypeId[?]): Array[String] = {
+      // Special handling for java.lang.String - normalize to scala.String
+      // to match original TypeName.string behavior for consistent discriminator names
+      if (tId == StandardTypes.string) {
+        return Array("scala", "String")
+      }
+      
       val segments     = tId.owner.segments.map(_.name)
       val fullTermName = new Array[String](segments.size + 1)
       var idx          = 0
