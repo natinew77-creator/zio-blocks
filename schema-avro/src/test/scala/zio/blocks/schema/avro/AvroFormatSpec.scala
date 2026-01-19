@@ -14,9 +14,6 @@ import java.util.UUID
 import java.util.Currency
 import scala.collection.immutable.ArraySeq
 
-import scala.annotation.nowarn
-
-@nowarn("msg=never used")
 object AvroFormatSpec extends SchemaBaseSpec {
   def spec: Spec[TestEnvironment, Any] = suite("AvroFormatSpec")(
     suite("primitives")(

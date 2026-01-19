@@ -1244,7 +1244,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
     if (tpe =:= TypeRepr.of[java.lang.String]) {
       return Array("scala", "String")
     }
-    
+
     var packages: List[String] = Nil
     var values: List[String]   = Nil
     var name: String           = null
