@@ -1976,7 +1976,10 @@ class JsonBinaryCodecDeriver private[json] (
 
   private[this] def isTuple[F[_, _], A](reflect: Reflect[F, A]): Boolean = reflect.isRecord && {
     val typeId = reflect.typeId
-    typeId.owner == zio.blocks.typeid.Owner.parse("scala") && typeId.name.startsWith("Tuple")
+    val owner  = typeId.owner
+    val name   = typeId.name
+    // Check for traditional Tuple2, Tuple3, etc. or Scala 3 generic tuple cons *:
+    owner == zio.blocks.typeid.Owner.parse("scala") && (name.startsWith("Tuple") || name == "*:")
   }
 }
 

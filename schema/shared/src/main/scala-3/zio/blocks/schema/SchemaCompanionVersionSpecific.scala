@@ -1025,6 +1025,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
             Nil,
             zio.blocks.typeid.TypeDefKind.Class(),
             Nil,
+            Nil,
             Nil
           )
         }
@@ -1039,6 +1040,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
             $nameExpr,
             Nil,
             zio.blocks.typeid.TypeDefKind.Class(),
+            Nil,
             Nil,
             Nil
           )
