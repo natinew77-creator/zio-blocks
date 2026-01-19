@@ -51,8 +51,8 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       assert(stripMetadata(Planet.name.focus.typeId).copy(args = Nil))(
         equalTo(
           zio.blocks.typeid.TypeId(
-            Owner(List(Owner.Package("neotype"), Owner.Type("Newtype"))),
-            "Type",
+            Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("NeotypeSupportSpec"))),
+            "Name",
             Nil,
             TypeDefKind.Class(),
             Nil,
@@ -63,8 +63,8 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       assert(stripMetadata(Planet.mass.focus.typeId).copy(args = Nil))(
         equalTo(
           zio.blocks.typeid.TypeId(
-            Owner(List(Owner.Package("neotype"), Owner.Type("Subtype"))),
-            "Type",
+            Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("NeotypeSupportSpec"))),
+            "Kilogram",
             Nil,
             TypeDefKind.Class(),
             Nil,
@@ -75,8 +75,8 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       assert(stripMetadata(Planet.radius.focus.typeId).copy(args = Nil))(
         equalTo(
           zio.blocks.typeid.TypeId(
-            Owner(List(Owner.Package("neotype"), Owner.Type("Newtype"))),
-            "Type",
+            Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("NeotypeSupportSpec"))),
+            "Meter",
             Nil,
             TypeDefKind.Class(),
             Nil,
@@ -231,7 +231,7 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
               errors = ::(
                 ExpectationMismatch(
                   source = DynamicOptic(nodes = Vector(DynamicOptic.Node.Field("dropRate"))),
-                  expectation = "Expected Type: Validation Failed"
+                  expectation = "Expected DropRate: Validation Failed"
                 ),
                 Nil
               )

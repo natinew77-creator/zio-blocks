@@ -1,6 +1,7 @@
 package zio.blocks.schema
 
 import zio.blocks.schema.binding._
+import zio.blocks.typeid.TypeId
 import zio.test.Assertion._
 import zio.test._
 
@@ -37,7 +38,7 @@ object SchemaVersionSpecificSpec extends SchemaBaseSpec {
         assert(NamedTuple4.schema.reflect.asInstanceOf[Reflect.Record[Binding, NamedTuple4]].fields.map(_.name))(
           equalTo(Vector("b", "sh", "i", "l"))
         ) &&
-        assert(NamedTuple4.schema.reflect.typeId.name)(equalTo("NamedTuple"))
+        assert(NamedTuple4.schema.reflect.typeId)(equalTo(TypeId.of[NamedTuple4]))
       },
       test("derives schema for case classes with named tuple fields") {
         case class NamedTuples(v1: (b: Byte, sh: Short), v2: (i: Int, l: Long))
@@ -79,21 +80,11 @@ object SchemaVersionSpecificSpec extends SchemaBaseSpec {
         assert(schema1.reflect.asInstanceOf[Reflect.Record[Binding, (i: Int, s: String)]].fields.map(_.name))(
           equalTo(Vector("i", "s"))
         ) &&
-        assert(schema1.reflect.typeId.name)(equalTo("NamedTuple")) &&
-        assert(schema2.reflect.typeId.name)(equalTo("NamedTuple")) &&
-        assert(schema1)(equalTo(schema2)) &&
-        assert(schema1)(equalTo(schema3)) &&
-        assert(schema1)(equalTo(schema4)) &&
-        assert(schema1)(equalTo(schema5)) &&
-        assert(schema1)(equalTo(schema6)) &&
-        assert(schema1)(equalTo(schema7)) &&
-        assert(schema1)(equalTo(schema8)) &&
-        assert(schema1)(equalTo(schema9)) &&
-        assert(schema1)(equalTo(schema10)) &&
-        assert(schema1)(equalTo(schema13)) &&
-        assert(schema11.reflect.typeId.name)(equalTo("NamedTuple")) &&
-        assert(schema12.reflect.typeId.name)(equalTo("NamedTuple")) &&
-        assert(schema14.reflect.typeId.name)(equalTo("NamedTuple")) &&
+        assert(schema1.reflect.typeId)(equalTo(TypeId.of[NamedTuple.NamedTuple[("i", "s"), Int *: String *: EmptyTuple]])) &&
+        assert(schema2.reflect.typeId)(equalTo(TypeId.of[NamedTuple.NamedTuple["i" *: "s" *: EmptyTuple, (Int, String)]])) &&
+        assert(schema11.reflect.typeId)(equalTo(TypeId.of[NamedTuple.Zip[(i: Int, s: String), (i: Long, s: String)]])) &&
+        assert(schema12.reflect.typeId)(equalTo(TypeId.of[NamedTuple.Map[(i: Int, s: String), Option]])) &&
+        assert(schema14.reflect.typeId)(equalTo(TypeId.of[NamedTuple.Empty])) &&
         assert(schema15)(equalTo(schema14)) &&
         assert(schema1.fromDynamicValue(schema1.toDynamicValue(value1)))(isRight(equalTo(value1))) &&
         assert(schema1.fromDynamicValue(schema1.toDynamicValue(value4)))(isRight(equalTo(value1))) &&
@@ -127,7 +118,7 @@ object SchemaVersionSpecificSpec extends SchemaBaseSpec {
 
         val schema1: Schema[Tuple.Reverse[(String, Int)]]              = Schema.derived
         val schema2: Schema[NamedTuple.DropNames[(i: Int, s: String)]] = Schema.derived
-        assert(schema1.reflect.typeId.name)(equalTo("Tuple2")) &&
+        assert(schema1.reflect.typeId)(equalTo(TypeId.of[Tuple.Reverse[(String, Int)]])) &&
         assert(schema1)(equalTo(schema2)) &&
         assert(schema1.fromDynamicValue(schema1.toDynamicValue(value1)))(isRight(equalTo(value1))) &&
         assert(schema1.fromDynamicValue(schema1.toDynamicValue(value2)))(isRight(equalTo(value1))) &&
@@ -153,7 +144,7 @@ object SchemaVersionSpecificSpec extends SchemaBaseSpec {
         assert(NamedTupleOfIntAndString.schema.fromDynamicValue(NamedTupleOfIntAndString.schema.toDynamicValue(value)))(
           isRight(equalTo(value))
         ) &&
-        assert(NamedTupleOfIntAndString.schema.reflect.typeId.name)(equalTo("NamedTuple"))
+        assert(NamedTupleOfIntAndString.schema.reflect.typeId)(equalTo(TypeId.of[GenericNamedTuple2[Int, String]]))
       },
       test("derives schema for higher-kind named tuples") {
         type HKNamedTuple2[F[_], G[_]] = (a: F[Int], b: G[String])
@@ -174,7 +165,7 @@ object SchemaVersionSpecificSpec extends SchemaBaseSpec {
             NamedTupleOfIntAndStringLists.schema.toDynamicValue(value)
           )
         )(isRight(equalTo(value))) &&
-        assert(NamedTupleOfIntAndStringLists.schema.reflect.typeId.name)(equalTo("NamedTuple"))
+        assert(NamedTupleOfIntAndStringLists.schema.reflect.typeId)(equalTo(TypeId.of[HKNamedTuple2[List, Set]]))
       },
       test("derives schema for recursive named tuples") {
         type NamedTuple9 = (
