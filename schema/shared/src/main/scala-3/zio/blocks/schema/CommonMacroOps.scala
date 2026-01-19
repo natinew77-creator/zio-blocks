@@ -31,12 +31,26 @@ private[schema] object CommonMacroOps {
   def genericTupleTypeArgs(using q: Quotes)(tpe: q.reflect.TypeRepr): List[q.reflect.TypeRepr] = {
     import q.reflect._
 
-    def loop(tp: Type[?]): List[TypeRepr] = tp match {
-      case '[h *: t] => TypeRepr.of[h].dealias :: loop(Type.of[t])
-      case _         => Nil
+    def loop(tpr: TypeRepr): List[TypeRepr] = {
+      val dealiased = tpr.dealias
+      dealiased match {
+        case AppliedType(base, List(head, tail))
+            if base.typeSymbol == defn.TupleClass(2) || base.typeSymbol.name == "*:" =>
+          // This is a *: (tuple cons) - extract head and recurse on tail
+          head.dealias :: loop(tail)
+        case AppliedType(base, args) if defn.isTupleClass(base.typeSymbol) =>
+          // This is a TupleN class - return all type args
+          args.map(_.dealias)
+        case _ if dealiased =:= TypeRepr.of[EmptyTuple] =>
+          // EmptyTuple - no more elements
+          Nil
+        case _ =>
+          // Unknown structure - return empty
+          Nil
+      }
     }
 
-    loop(tpe.asType)
+    loop(tpe)
   }
 
   // Borrowed from an amazing work of Aleksander Rainko:

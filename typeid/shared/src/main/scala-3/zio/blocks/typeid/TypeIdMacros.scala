@@ -8,8 +8,38 @@ object TypeIdMacros {
     import quotes.reflect._
 
     def getTypeId(rootTpe: TypeRepr): Expr[TypeId[A]] = {
-      def getTypeIdImpl(tpe: TypeRepr): Expr[TypeId[?]] =
+      def getTypeIdImpl(tpe: TypeRepr): Expr[TypeId[?]] = {
         tpe match {
+          // Special handling for ZIO Prelude newtypes/subtypes: TypeRef(prefix, "Type")
+          // Return the base class (Subtype/NewtypeCustom) TypeId instead of the concrete wrapper
+          // Note: neotype expects concrete wrapper names, so only handle zio.prelude here
+          case TypeRef(compTpe, "Type") =>
+            val baseClassSymbol = compTpe.baseClasses.find { sym =>
+              val name = sym.fullName
+              name == "zio.prelude.Subtype" || name == "zio.prelude.NewtypeCustom" ||
+              name == "zio.prelude.Newtype"
+              // Intentionally NOT including neotype.Newtype - it expects concrete wrapper names
+            }
+            baseClassSymbol match {
+              case Some(baseSym) =>
+                // Use the base class as owner, "Type" as name
+                val ownerExpr = makeOwner(baseSym)
+                '{
+                  TypeId(
+                    $ownerExpr,
+                    "Type",
+                    Nil,
+                    TypeDefKind.Class(),
+                    Nil,
+                    Nil,
+                    Nil
+                  )
+                }
+              case None =>
+                // Not a recognized newtype, fall through to normal handling
+                makeTypeId(tpe.typeSymbol, Nil, deep = true)
+            }
+
           case t: TypeRef =>
             makeTypeId(t.typeSymbol, Nil, deep = true)
 
@@ -52,6 +82,7 @@ object TypeIdMacros {
             // Fallback for refinements etc.
             makeSyntheticTypeId("Refined", Nil)
         }
+      }
       val res = getTypeIdImpl(rootTpe)
       '{ $res.asInstanceOf[TypeId[A]] }
     }

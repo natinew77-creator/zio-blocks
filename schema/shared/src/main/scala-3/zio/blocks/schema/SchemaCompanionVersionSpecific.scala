@@ -873,8 +873,9 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
             val typeInfo =
               if (isGenericTuple(tTpe)) new GenericTupleInfo[tt](tTpe)
               else new ClassInfo[tt](tTpe)
-            val fields = typeInfo.fields[tt](Array.empty[String])
-            val tpeId  = '{ TypeId.from[tt] }
+            val fields       = typeInfo.fields[tt](Array.empty[String])
+            val tpeIdUntyped = makeTypeId(tTpe)
+            val tpeId        = '{ $tpeIdUntyped.asInstanceOf[TypeId[tt]] }
             '{
               new Schema(
                 reflect = new Reflect.Record[Binding, tt](
@@ -1002,22 +1003,36 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
         }
       } else cannotDeriveSchema(tpe)
     }.asInstanceOf[Expr[Schema[T]]]
-    '{ new Schema($baseSchema.reflect.typeId($tpeId)).asInstanceOf[Schema[T]] }
+    // For generic tuples and newtypes, the TypeId is already correctly set
+    // Don't override it with the original type's TypeId
+    if (isGenericTuple(tpe) || isNewtype(tpe)) baseSchema
+    else '{ new Schema($baseSchema.reflect.typeId($tpeId)).asInstanceOf[Schema[T]] }
   }
 
-  private def makeTypeId(tpe: TypeRepr): Expr[TypeId[?]] =
-    tpe match {
-      case TypeRef(prefix, "Type") =>
-        // For neotype/subtype patterns where Type is a member of an object
-        val prefixSym = prefix match {
-          case TermRef(_, _) => prefix.termSymbol
-          case ThisType(tr)  => tr.typeSymbol
-          case _             => prefix.typeSymbol
-        }
-        val sym       = if (prefixSym != Symbol.noSymbol && prefixSym.name != "<none>") prefixSym else tpe.typeSymbol
-        val ownerExpr = makeOwner(sym.maybeOwner)
-        val nameStr   = sym.name.stripSuffix("$")
-        val nameExpr  = Expr(nameStr)
+  private def makeTypeId(tpe: TypeRepr): Expr[TypeId[?]] = {
+    // For ZIO Prelude newtypes/subtypes, return the base class TypeId (e.g., zio.prelude.Subtype.Type)
+    // For neotype, return the concrete wrapper TypeId (they want the wrapper name, not the base class)
+    def getZioPreludeBaseClass(t: TypeRepr): Option[Symbol] = t match {
+      case TypeRef(compTpe, "Type") =>
+        val classes = compTpe.baseClasses
+        // Only handle ZIO Prelude types - neotype expects concrete wrapper names
+        val zioPreludePriorities = List(
+          "zio.prelude.Subtype",
+          "zio.prelude.NewtypeCustom",
+          "zio.prelude.Newtype"
+        )
+        zioPreludePriorities.flatMap(p => classes.find(_.fullName == p)).headOption
+      case _ =>
+        val dealiased = t.dealias
+        if (dealiased != t) getZioPreludeBaseClass(dealiased)
+        else None
+    }
+    
+    getZioPreludeBaseClass(tpe) match {
+      case Some(baseSym) =>
+        // Use the base class (e.g., zio.prelude.Subtype) as the owner, "Type" as the name
+        val ownerExpr = makeOwner(baseSym)
+        val nameExpr  = Expr("Type")
         '{
           TypeId(
             $ownerExpr,
@@ -1029,7 +1044,8 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
             Nil
           )
         }
-      case _ =>
+      case None =>
+        // Normal type, use type symbol
         val sym       = tpe.typeSymbol
         val ownerExpr = makeOwner(sym.maybeOwner)
         val nameStr   = sym.name.stripSuffix("$")
@@ -1046,6 +1062,7 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
           )
         }
     }
+  }
 
   private def makeOwner(sym: Symbol): Expr[zio.blocks.typeid.Owner] =
     if (sym == Symbol.noSymbol || sym == defn.RootClass || sym == defn.RootPackage) '{ zio.blocks.typeid.Owner.Root }
@@ -1241,12 +1258,6 @@ private class SchemaCompanionVersionSpecificImpl(using Quotes) {
     '{ new Array[T]($size)(using ${ summonClassTag[T] }) }
 
   private def toFullTermName(tpe: TypeRepr): Array[String] = {
-    // Special handling for java.lang.String - normalize to scala.String
-    // to match original TypeName.string behavior for consistent discriminator names
-    if (tpe =:= TypeRepr.of[java.lang.String]) {
-      return Array("scala", "String")
-    }
-
     var packages: List[String] = Nil
     var values: List[String]   = Nil
     var name: String           = null
