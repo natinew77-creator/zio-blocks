@@ -14,6 +14,9 @@ import java.util.UUID
 import java.util.Currency
 import scala.collection.immutable.ArraySeq
 
+import scala.annotation.nowarn
+
+@nowarn("msg=never used")
 object AvroFormatSpec extends SchemaBaseSpec {
   def spec: Spec[TestEnvironment, Any] = suite("AvroFormatSpec")(
     suite("primitives")(
@@ -266,7 +269,7 @@ object AvroFormatSpec extends SchemaBaseSpec {
         val codec = Record1.schema
           .deriving(AvroFormat.deriver)
           .instance(
-            TypeId(Owner.parse("scala"), "Int", Nil, TypeDefKind.Class(), Nil),
+            TypeId(Owner.parse("scala"), "Int", Nil, TypeDefKind.Class(), Nil).asInstanceOf[TypeId[Int]],
             new AvroBinaryCodec[Int](AvroBinaryCodec.intType) {
               val avroSchema: AvroSchema = AvroSchema.create(AvroSchema.Type.STRING)
 
@@ -369,7 +372,7 @@ object AvroFormatSpec extends SchemaBaseSpec {
         val codec = Record2.schema
           .deriving(AvroFormat.deriver)
           .instance(
-            TypeId(Owner.parse("scala"), "Int", Nil, TypeDefKind.Class(), Nil),
+            TypeId(Owner.parse("scala"), "Int", Nil, TypeDefKind.Class(), Nil).asInstanceOf[TypeId[Int]],
             new AvroBinaryCodec[Int](AvroBinaryCodec.intType) {
               val avroSchema: AvroSchema = AvroSchema.create(AvroSchema.Type.STRING)
 

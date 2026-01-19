@@ -153,15 +153,17 @@ private object SchemaCompanionVersionSpecific {
             if (ownerSym.isPackage || ownerSym.isPackageClass) packages = ownerName :: packages
             else values = ownerName :: values
           }
-          
+
           val owner = Owner((packages.map(Owner.Package(_)) ::: values.map(Owner.Term(_))).toList)
-          
+
           val tArgs = typeArgs(tpe).map(typeId)
 
           new TypeId(
-            owner, 
-            name, 
-            tArgs.zipWithIndex.map { case (arg, i) => TypeParam(arg.show, i, zio.blocks.typeid.Variance.Invariant, zio.blocks.typeid.TypeBounds.empty) },
+            owner,
+            name,
+            tArgs.zipWithIndex.map { case (arg, i) =>
+              TypeParam(arg.show, i, zio.blocks.typeid.Variance.Invariant, zio.blocks.typeid.TypeBounds.empty)
+            },
             TypeDefKind.Class(),
             Nil,
             Nil
@@ -183,24 +185,24 @@ private object SchemaCompanionVersionSpecific {
 
     def toTree(tId: TypeId[?]): Tree = {
       val segments = tId.owner.segments.map {
-         case Owner.Package(n) => q"zio.blocks.typeid.Owner.Package($n)"
-         case Owner.Term(n) => q"zio.blocks.typeid.Owner.Term($n)"
-         case Owner.Type(n) => q"zio.blocks.typeid.Owner.Type($n)"
-         case Owner.Local(i) => q"zio.blocks.typeid.Owner.Local($i)"
+        case Owner.Package(n) => q"zio.blocks.typeid.Owner.Package($n)"
+        case Owner.Term(n)    => q"zio.blocks.typeid.Owner.Term($n)"
+        case Owner.Type(n)    => q"zio.blocks.typeid.Owner.Type($n)"
+        case Owner.Local(i)   => q"zio.blocks.typeid.Owner.Local($i)"
       }
-      
+
       val ownerTree = q"zio.blocks.typeid.Owner(List(..$segments))"
-      
-      val name     = tId.name
-      
+
+      val name = tId.name
+
       val typeParams = tId.typeParams.map { tp =>
-         val kind = tp.kind match {
-             case zio.blocks.typeid.Kind.Type => q"zio.blocks.typeid.Kind.Type"
-             case _ => q"zio.blocks.typeid.Kind.Type" // simplification for now
-         }
-         q"zio.blocks.typeid.TypeParam(${tp.name}, ${tp.index}, zio.blocks.typeid.Variance.Invariant, zio.blocks.typeid.TypeBounds.empty, $kind)"
+        val kind = tp.kind match {
+          case zio.blocks.typeid.Kind.Type => q"zio.blocks.typeid.Kind.Type"
+          case _                           => q"zio.blocks.typeid.Kind.Type" // simplification for now
+        }
+        q"zio.blocks.typeid.TypeParam(${tp.name}, ${tp.index}, zio.blocks.typeid.Variance.Invariant, zio.blocks.typeid.TypeBounds.empty, $kind)"
       }
-      
+
       q"new zio.blocks.typeid.TypeId($ownerTree, $name, List(..$typeParams), zio.blocks.typeid.TypeDefKind.Class(), Nil, Nil)"
     }
 
@@ -630,7 +632,7 @@ private object SchemaCompanionVersionSpecific {
     }
 
     def toFullTermName(tId: TypeId[?]): Array[String] = {
-      val segments = tId.owner.segments.map(_.name)
+      val segments     = tId.owner.segments.map(_.name)
       val fullTermName = new Array[String](segments.size + 1)
       var idx          = 0
       segments.foreach { p =>

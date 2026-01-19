@@ -12,8 +12,15 @@ object ZIOPreludeSupportSpec extends SchemaBaseSpec {
   def spec: Spec[TestEnvironment, Any] = suite("ZIOPreludeSupportSpec")(
     test("derive schemas for cases classes with subtype and newtype fields") {
       val value = new Planet(Name("Earth"), Kilogram(5.97e24), Meter(6378000.0), Some(Meter(1.5e15)))
-      
-      val expectedOwner = Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("ZIOPreludeSupportSpec")))
+
+      val expectedOwner = Owner(
+        List(
+          Owner.Package("zio"),
+          Owner.Package("blocks"),
+          Owner.Package("schema"),
+          Owner.Term("ZIOPreludeSupportSpec")
+        )
+      )
       def expectedTypeId(name: String): TypeId[Any] = TypeId(
         expectedOwner,
         name,
@@ -78,13 +85,13 @@ object ZIOPreludeSupportSpec extends SchemaBaseSpec {
   type Kilogram = Kilogram.Type
 
   object Kilogram extends Subtype[Double] {
-      implicit val schema: Schema[Kilogram] = Schema.derived
+    implicit val schema: Schema[Kilogram] = Schema.derived
   }
 
   type Meter = Meter.Type
 
   object Meter extends Newtype[Double] {
-      implicit val schema: Schema[Meter] = Schema.derived
+    implicit val schema: Schema[Meter] = Schema.derived
   }
 
   case class Planet(name: Name, mass: Kilogram, radius: Meter, distanceFromSun: Option[Meter])

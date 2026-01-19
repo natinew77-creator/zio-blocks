@@ -13,21 +13,21 @@ final case class TypeId[A](
     case TypeDefKind.TypeAlias(alias) => Some(alias)
     case _                            => None
   }
-  
+
   override def equals(obj: Any): Boolean = obj match {
     case other: TypeId[_] => TypeEquality.typeIdEquals(this, other)
-    case _             => false
+    case _                => false
   }
 
   override def hashCode(): Int = TypeEquality.typeIdHashCode(this)
 
-  def isSubtypeOf(other: TypeId[_]): Boolean = 
+  def isSubtypeOf(other: TypeId[_]): Boolean =
     Subtyping.isSubtype(TypeRepr.Ref(this, Nil), TypeRepr.Ref(other, Nil))
 
-  def isSupertypeOf(other: TypeId[_]): Boolean = 
+  def isSupertypeOf(other: TypeId[_]): Boolean =
     Subtyping.isSubtype(TypeRepr.Ref(other, Nil), TypeRepr.Ref(this, Nil))
 
-  def isEquivalentTo(other: TypeId[_]): Boolean = 
+  def isEquivalentTo(other: TypeId[_]): Boolean =
     Subtyping.isEquivalent(TypeRepr.Ref(this, Nil), TypeRepr.Ref(other, Nil))
 
   def show: String = {
