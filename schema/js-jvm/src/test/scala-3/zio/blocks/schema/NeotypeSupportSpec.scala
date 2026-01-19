@@ -51,7 +51,14 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       assert(stripMetadata(Planet.name.focus.typeId).copy(args = Nil))(
         equalTo(
           zio.blocks.typeid.TypeId(
-            Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("NeotypeSupportSpec"))),
+            Owner(
+              List(
+                Owner.Package("zio"),
+                Owner.Package("blocks"),
+                Owner.Package("schema"),
+                Owner.Term("NeotypeSupportSpec")
+              )
+            ),
             "Name",
             Nil,
             TypeDefKind.Class(),
@@ -63,7 +70,14 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       assert(stripMetadata(Planet.mass.focus.typeId).copy(args = Nil))(
         equalTo(
           zio.blocks.typeid.TypeId(
-            Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("NeotypeSupportSpec"))),
+            Owner(
+              List(
+                Owner.Package("zio"),
+                Owner.Package("blocks"),
+                Owner.Package("schema"),
+                Owner.Term("NeotypeSupportSpec")
+              )
+            ),
             "Kilogram",
             Nil,
             TypeDefKind.Class(),
@@ -75,7 +89,14 @@ object NeotypeSupportSpec extends SchemaBaseSpec {
       assert(stripMetadata(Planet.radius.focus.typeId).copy(args = Nil))(
         equalTo(
           zio.blocks.typeid.TypeId(
-            Owner(List(Owner.Package("zio"), Owner.Package("blocks"), Owner.Package("schema"), Owner.Term("NeotypeSupportSpec"))),
+            Owner(
+              List(
+                Owner.Package("zio"),
+                Owner.Package("blocks"),
+                Owner.Package("schema"),
+                Owner.Term("NeotypeSupportSpec")
+              )
+            ),
             "Meter",
             Nil,
             TypeDefKind.Class(),
